@@ -31,12 +31,14 @@ Maximize GCL upgrade rate under _GCL_, _CPU_ and _memory_ constraints by means o
 
 Main loops doesn't cycle through creeps. Here's the order:
 
-1. The Colony priority tasks
-2. (each) Spawn priority tasks
-3. (each) Squad tasks in type order AND their creeps tasks
-4. (each) Spawn normal tasks
-5. The Colony normal tasks
-6. (if any) deffered tasks given by any entity
+1. Global defines
+2. (if error) Sanity checks
+3. The Colony priority tasks
+4. (each) Spawn priority tasks
+5. (each) Squad tasks in type order AND their creeps tasks
+6. (each) Spawn normal tasks
+7. The Colony normal tasks
+8. (if any) deffered tasks given by any entity
 
 #### Entities
 
