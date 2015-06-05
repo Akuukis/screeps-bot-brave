@@ -43,7 +43,7 @@ Main loops doesn't cycle through creeps. Here's the order:
 #### Entities
 
 * The Colony (army)
-* Spawns (logistics)
+* Cities (logistics)
 * Squads (local tasks)
 * creeps (within any of three above)
 
@@ -57,13 +57,13 @@ Colony has mapped nearby room for their tactical usefulness and best locations f
 
 Also Colony maps rooms for their income potential and best spawn placement, thus prioritizing which room to conquer next.
 
-## Spawns
+## Cities
 
-Spawn is coordinating all logistics within a room and in nearby neutral rooms, as well construction, links, road management and creep spawning.
+Every room has a city. City includes all spawns within it and coordinates all logistics within a room and in nearby neutral rooms, as well construction, links, road management and creep spawning. Cities trade and/or supply other cities.
 
 #### Signup spawning
 
-Every squad knows when creeps within them have to be replaced, thus signup at spawn to spawn it in some time in future. Spawns are not allowed to cancel signups but according to priorities it can move them around if two signed at the same time.
+Every squad knows when creeps within them have to be replaced, thus signup at city to spawn it in some time in future. Spawns are not allowed to cancel signups but according to priorities it can move them around if two signed at the same time.
 
 #### Logistics (Transportation) - pipe system
 
