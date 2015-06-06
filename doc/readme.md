@@ -69,6 +69,15 @@ Every squad knows when creeps within them have to be replaced, thus signup at ci
 
 Logistics are done by CCMM creeps that act as pipes. From positive pipes they such energy until full, and if next pipe come, it takes energy from the first element in pipe, and moves away before it. Thus first pipe acts as a buffer in the same time. And if there are a lot of pipes, then they will naturally form a pipe.
 
+Taps
+
+````js
+Memory.taps[uid] = {
+	pos: pos, // place where logistics are supposed to place or take energy.
+	away: 0, // Distance from tap to the nearest owned room. away=0 if it is in owned room.
+};
+````
+
 ## Squads
 
 Squads is a single entity with a given goal. Squad may temporarly have no creeps, but eventually will have at least one. Squad is responsible for creep lifecycle management and request replacement from Spawns. Squad performance is measured. Squad is scalable and flexible and the only difference of predefined squads is their aim. Main loop does not cycle through
@@ -85,8 +94,60 @@ Squads is a single entity with a given goal. Squad may temporarly have no creeps
 
 #### Properties
 
-* id - number, ID number
-* tap - location, place where logistics are supposed to place or take energy
-* creeps - array, a list of creep IDs.
-* perf - object, performance ratios
-* uniq - object, unique to each type
+````js
+Memory.squads[id] = { // id is string, uid of target source.
+	tap: "", // uid of owned tap.
+	state: "", // name of squad scope state. Every type has at least "idle" and "normal" states.
+	options: [ // list of possible sets of creeps with their performance ratios.
+		{
+			e:0, // Required number of extensions for the option.
+			c:[], // Set of creeps.
+			mass:[], // Set of sum of all body parts.
+			cost:0, // Total cost of all body parts.
+			uniq: {}, // unique to each type.
+		},
+	],
+	wish: {}, // Current best option that squad will signup for.
+	creeps: [], // a list of creep IDs.
+	perf: {}, // performance ratios.
+	uniq: {}, // unique to each type.
+}
+````
+
+#### Creep-level decisionmaking
+
+The only thing creeps think on their own is safety. Safe means when there is no threat that can be checked by iterating through functions by
+
+````js
+// creep is the object of himself
+var threat = true;
+for(t in Memory.threats){
+	var safe = threatsFunction[Memory.threats[t].id](creep.pos,Memory.threats[t].data);
+	if( safe && safe < threat ){ threat = safe; };
+};
+if( threat===true ){
+	console.log("I am safe until walls break down.");
+}else if( threat ){
+	console.log("I am safe at minimum " + threat + " more ticks.");
+};
+````
+
+#### Squad: *mine*
+
+````js
+Memory.squads[id].uniq = {
+	lair: boolean, // True if source is guarded/blocked by Source Keeper.
+	spots: [], // List of filtered max 3 pos next to source.
+}
+````
+
+## Notes on performance
+
+````js
+// Every line starts with "var t=Game.getUsedCpu(); for(i=0;i<100;i++){ ", ends with "}; console.log(Game.getUsedCpu()-t);" and is entered into console.
+Game.rooms.W4N5.lookAt(25,41); // 100-120 CPU
+Game.rooms.W4N5.find(FIND_STRUCTURES, {filter: { structureType: STRUCTURE_SPAWN }}); // 2.0-6.5 CPU
+Game.rooms.W4N5.find(FIND_DROPPED_ENERGY); // 1.5-5.5 CPU
+Game.spawns["Spawn1"]; // 0.2-0.35 CPU
+Game.getObjectById("557293f459189a99084ffa68"); // 0.2-0.35 CPU
+````
