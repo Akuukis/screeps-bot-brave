@@ -36,8 +36,8 @@ Main loops doesn't cycle through creeps. Here's the order:
 3. The Colony priority tasks
 4. (each) Spawn priority tasks
 5. (each) Squad tasks in type order AND their creeps tasks
+7. The Colony normal tasks (signup distribution)
 6. (each) Spawn normal tasks
-7. The Colony normal tasks
 8. (if any) deffered tasks given by any entity
 
 #### Entities
@@ -143,6 +143,7 @@ Memory.squads[id].uniq = {
 
 ## Notes on performance
 
+API calls:
 ````js
 // Every line starts with "var t=Game.getUsedCpu(); for(i=0;i<100;i++){ ", ends with "}; console.log(Game.getUsedCpu()-t);" and is entered into console.
 Game.rooms.W4N5.lookAt(25,41); // 100-120 CPU
@@ -150,4 +151,12 @@ Game.rooms.W4N5.find(FIND_STRUCTURES, {filter: { structureType: STRUCTURE_SPAWN 
 Game.rooms.W4N5.find(FIND_DROPPED_ENERGY); // 1.5-5.5 CPU
 Game.spawns["Spawn1"]; // 0.2-0.35 CPU
 Game.getObjectById("557293f459189a99084ffa68"); // 0.2-0.35 CPU
+test = new RoomPosition(1,1,'W8N4'); // 0.37-0.40
+````
+
+Javascript itself:
+
+````js
+var t=Game.getUsedCpu(); var test="kuku"; for(i=0;i<1000;i++){ test=test||"blah" }; console.log(Game.getUsedCpu()-t); // 2.5-3.0, all types
+var t=Game.getUsedCpu(); var test="kuku"; for(i=0;i<1000;i++){ if(!test){test="blah"}; }; console.log(Game.getUsedCpu()-t); // 1.5-2.0, all types
 ````
