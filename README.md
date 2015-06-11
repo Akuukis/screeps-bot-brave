@@ -1,3 +1,39 @@
+## Vision
+
+* **Is fun to own and watch.** It reports what it does so user can be aware of otherwise invisible decisions and actions. Users can modify few memory variables to turn on/off whatever he wan't to focus on.
+* **Is conceptually effective.** It is good AI because it runs on good features like self-reflection, demand-supply market and more to come.
+* **Is social.** It allies with other colonies that has the same script, cooperates with them economically and make joint military campaigns.
+* **Is error-prone.** If user messed up with Memory, script will deal with it. It may go crazy and give funny warnings, but it will never throw errors.
+* **Is CPU and RAM efficient.** It does things as caching, heuristics, function prioritizing and deferred tasks across ticks. The technical stuff under-the-hood has to be good also.
+* **Is scalable.** It has the same code and works as well as just spawned or managing 10 rooms.
+* **Is understandable.** Has good documentation, clear code, meaningful variable names, to-the-point comments and etc. Devs and to-be-devs are here not onlyu to have fun, but also to learn something. So let's make it easy and fun, too.
+
+## How to participate
+
+#### To use or test
+
+1. Fork
+2. It should work out-of-box (content of master branch). If not, report an issue
+
+#### To participate
+
+1. Fork
+2. Change default branch to `develop`. That's in Github settings just under repository name
+3. To trigger screeps.com to repull your code from default branch commit on any branch
+4. Test & play around
+	- To try out new code in 3 seconds, add alias in `~/.bash_profile` file
+	
+	````bash
+	alias gitfix='git commit --all --amend --no-edit; git push -f'`.
+	````
+	
+5. Pull request to any of `feature-*` branches, to `develop`, or to next `release-*` branch
+	- Use tab for indents, LF line endings, 120char line length. Please comment inline where neccessary and think of meaningful and good variable names
+	- To make a new branch repeat steps 2.-4
+	- Please use 50/72 commit messages http://stackoverflow.com/questions/2290016/git-commit-messages-50-72-formatting
+	- For big picture here's branching model http://nvie.com/posts/a-successful-git-branching-model/
+	- Also good in general http://www.kmoser.com/articles/Good_Programming_Practices.php
+
 ## Global concepts
 
 #### Goal
