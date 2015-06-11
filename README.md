@@ -1,9 +1,9 @@
 ## Vision
 
 * **Is fun to own and watch.** It reports what it does so user can be aware of otherwise invisible decisions and actions. Users can modify few memory variables to turn on/off whatever he wan't to focus on.
-* **Is conceptually effective.** It is good AI because it runs on good features like self-reflection, demand-supply market and more to come.
+* **Is conceptually effective.** It runs on ideas like decentralization, self-reflection, demand-supply market and more to come.
 * **Is social.** It allies with other colonies that has the same script, cooperates with them economically and make joint military campaigns.
-* **Is error-prone.** If user messed up with Memory, script will deal with it. It may go crazy and give funny warnings, but it will never throw errors.
+* **Is error-prone.** Nothing in world should surprise AI except API patches. And if user messed up with Memory it may detect and solve it, or go crazy, give funny warnings and eventually deal with it, but it will never throw the same error more than once.
 * **Is CPU and RAM efficient.** It does things as caching, heuristics, function prioritizing and deferred tasks across ticks. The technical stuff under-the-hood has to be good also.
 * **Is scalable.** It has the same code and works as well as just spawned or managing 10 rooms.
 * **Is understandable.** Has good documentation, clear code, meaningful variable names, to-the-point comments and etc. Devs and to-be-devs are here not onlyu to have fun, but also to learn something. So let's make it easy and fun, too.
@@ -21,20 +21,67 @@
 2. Change default branch to `develop`. That's in Github settings just under repository name
 3. To trigger screeps.com to repull your code from default branch commit on any branch
 4. Test & play around
-	- To try out new code in 3 seconds, add alias in `~/.bash_profile` file
+	- To try out new code in 3 seconds, you can add alias in `~/.bash_profile` file
 	
 	````bash
 	alias gitfix='git commit --all --amend --no-edit; git push -f'`.
 	````
 	
 5. Pull request to any of `feature-*` branches, to `develop`, or to next `release-*` branch
-	- Use tab for indents, LF line endings, 120char line length. Please comment inline where neccessary and think of meaningful and good variable names
+	- Use tab for indents, LF line endings, 120char line length
 	- To make a new branch repeat steps 2.-4
 	- Please use 50/72 commit messages http://stackoverflow.com/questions/2290016/git-commit-messages-50-72-formatting
 	- For big picture here's branching model http://nvie.com/posts/a-successful-git-branching-model/
 	- Also good in general http://www.kmoser.com/articles/Good_Programming_Practices.php
 
-## Global concepts
+## Concepts
+
+#### Entities
+
+1. Real entities are provied by API but only if visible.
+	- `Game.rooms[name]` is iterated to detect unscouted rooms and to update cached rooms
+	- `Game.spawns[name]` is not iterated but called directly by `Game.getObjectById()`
+	- `Game.screeps[name]` is not iterated but called directly by `Game.getObjectById()`
+2. Virtual entities are constructed and memorized by AI and their performance measured
+	- `Memory.spawns[name]` are constructed from `Game.spawns[name]`.
+		- Goal: Minimize creep replacement costs per overhead
+		- Processes order queue
+		- Dispatches spawned creeps
+	- `Memory.squads[id]` are sets of creeps for a specific goal.
+		-	Goal: [specific to squad type]
+		- Decides for creep actions
+		- Decides for demand of replacing creeps
+	- `Memory.cities[name]` are captured rooms
+		- Goal: maximize ROI (return per investment over specific period of time)
+		- Contains extra overlays that builds upon `Memory.rooms[name]`
+		- Stores energy
+		- Decides for energy allocation
+			- invest in infrastructure
+			- upgrade controller
+			- loan to other city
+	- `Memory.colony` is the global entity
+		- Goal: maximize expected GCL after epoch
+		- Contains supra-room overlays
+		- Decides for logistics
+		- Decides for demand and supply matching
+		- Decides to evaluate enemy threat level
+		- Decides for global economical parameters as required ROI, militariness, length of epoch, etc.
+		- Decides for conquest investments
+3. Cache
+	- `Memory.taps[id/name]` are logistical nodes with pos and statistics. Every other entity has exatly 1 taps and their id/name matches. Not iterated
+	- `Memory.threats[id]` are different types of possible worst-case threats. Iterated to detect if pos is safe
+	- `Memory.rooms[name]` are cached versions of `Game.rooms[name]` and overlays
+	- `Memory.demand[array]` are cached orders from squads & etc to spawn a creep. Iterated to process them
+	- `Memory.supply[array]` are processed orders in any of of states: "in queue", "spawning", "dispatching", "ready"
+	- `Memory.network[id-id]` are cached paths between taps that are used for navigation and logistics. Uses concept of 2 directional roads
+	- `Memory.zones[id]` are cached logical subsets of room that are used for defence planning
+	- `Memory.deferred[array]` is array that holds all deferred tasks. Iterated to process them
+
+Game.rooms 
+
+#### Decentralized decision-making
+
+If any on entities die, disappear or have corrupted memory it doesn't impact other entity.
 
 #### Goal
 
@@ -120,13 +167,22 @@ Squads is a single entity with a given goal. Squad may temporarly have no creeps
 
 #### Types
 
-* upgr - Controller upgrader squad (may be single creep)
-* mine - Miner squad (including anti-keeper fighters)
-* deff - defenders blocking a narror place between walls, including ramparts, repairers and contructed walls
-* patr - patrol for fast reaction to enemies within safe territory
-* offn - attacking unit meant for serious engagement and mostly room conquest
-* esco - escort logistic chain to/from unsafe mine
-* scot - scouting unit that also harass defenseless enemies
+1. Descriptions
+	* mine: Miner squad (including anti-keeper fighters)
+	* upgr: Controller upgrader squad (may be single creep)
+	* zoos: "Zoo for keeper" by maintaining keeper blocked, occupied or killed
+	* deff: defenders blocking a narror place between walls, including ramparts, repairers and contructed walls
+	* scot: scouting unit that also harass defenseless enemies
+	* guer: targets undefended or underdefended enemy creeps and structures
+	* offn: attacking unit meant for serious engagement and sure room conquest
+2. Goals (to be measured per cost-rate)
+	* mine: maximize energy gather rate from given source
+	* upgr: maximize upgrade rate
+	* zoos: remove source keeper threat
+	* deff: remove player threat for given zone(s)
+	* scot: minimize costs for deff squad + grant vision
+	* guer: maximize (real and potential) enemy costs
+	* offn: conquer room
 
 #### Properties
 
