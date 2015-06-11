@@ -160,3 +160,7 @@ Javascript itself:
 var t=Game.getUsedCpu(); var test="kuku"; for(i=0;i<1000;i++){ test=test||"blah" }; console.log(Game.getUsedCpu()-t); // 2.5-3.0, all types
 var t=Game.getUsedCpu(); var test="kuku"; for(i=0;i<1000;i++){ if(!test){test="blah"}; }; console.log(Game.getUsedCpu()-t); // 1.5-2.0, all types
 ````
+
+## Notes on objects
+
+http://davidwalsh.name/javascript-objects-deconstruction
