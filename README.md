@@ -42,7 +42,7 @@
 	- `Game.rooms[name]` is iterated to detect unscouted rooms and to update cached rooms
 	- `Game.spawns[name]` is not iterated but called directly by `Game.getObjectById()`
 	- `Game.screeps[name]` is not iterated but called directly by `Game.getObjectById()`
-2. Virtual entities are constructed and memorized by AI and their performance measured
+2. Virtual entities are constructed and memorized by AI and their performance are measured
 	- `Memory.spawns[name]` are constructed from `Game.spawns[name]`.
 		- Goal: Minimize creep replacement costs per overhead
 		- Processes order queue
@@ -51,10 +51,11 @@
 		-	Goal: [specific to squad type]
 		- Decides for creep actions
 		- Decides for demand of replacing creeps
-	- `Memory.cities[name]` are captured rooms
+	- `Memory.cities[name]` are captured rooms + its surrounding uncaptured "farm" rooms
 		- Goal: maximize ROI (return per investment over specific period of time)
 		- Contains extra overlays that builds upon `Memory.rooms[name]`
-		- Stores energy
+		- Stores energy (central storage is fat tail to central spawn)
+		- Decides for logistics
 		- Decides for energy allocation
 			- invest in infrastructure
 			- upgrade controller
@@ -62,7 +63,6 @@
 	- `Memory.colony` is the global entity
 		- Goal: maximize expected GCL after epoch
 		- Contains supra-room overlays
-		- Decides for logistics
 		- Decides for demand and supply matching
 		- Decides to evaluate enemy threat level
 		- Decides for global economical parameters as required ROI, militariness, length of epoch, etc.
@@ -73,7 +73,7 @@
 	- `Memory.rooms[name]` are cached versions of `Game.rooms[name]` and overlays
 	- `Memory.demand[array]` are cached orders from squads & etc to spawn a creep. Iterated to process them
 	- `Memory.supply[array]` are processed orders in any of of states: "in queue", "spawning", "dispatching", "ready"
-	- `Memory.network[id-id]` are cached paths between taps that are used for navigation and logistics. Uses concept of 2 directional roads
+	- `Memory.network[id-id]` are cached paths between taps that are used for navigation and logistics. Uses concept of rightside 2 directional roads
 	- `Memory.zones[id]` are cached logical subsets of room that are used for defence planning
 	- `Memory.deferred[array]` is array that holds all deferred tasks. Iterated to process them
 
