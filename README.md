@@ -233,6 +233,10 @@ Memory.squads[id].uniq = {
 }
 ````
 
+## Debug snippets
+
+Armagaddeon: `var t = Memory.creeps; for(i in Memory){ Memory[i] = undefined; }; Memory.creeps=t;`
+
 ## Notes on performance
 
 API calls:
