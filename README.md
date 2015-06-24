@@ -13,21 +13,24 @@
 #### To use or test
 
 1. Fork
-2. It should work out-of-box (content of master branch). If not, report an issue
+2. Make sure default branch is `master`. That's in Github settings just under repository name
+3. It should work out-of-box (content of **master** branch). If not, report an issue
 
 #### To participate
 
+
 1. Fork
 2. Change default branch to `develop`. That's in Github settings just under repository name
-3. To trigger screeps.com to repull your code from default branch commit on any branch
-4. Test & play around
+3. It should work and not throw basic errors but use with caution
+4. To trigger screeps.com to repull your code from default branch commit on any branch
+5. Test & play around
 	- To try out new code in 3 seconds, you can add alias in `~/.bash_profile` file
 	
 	````bash
 	alias gitfix='git commit --all --amend --no-edit; git push -f'`.
 	````
 	
-5. Pull request to any of `feature-*` branches, to `develop`, or to next `release-*` branch
+6. Pull request to any of `feature-*` branches, to `develop`, or to next `release-*` branch
 	- Use tab for indents, LF line endings, 120char line length
 	- To make a new branch repeat steps 2.-4
 	- Please use 50/72 commit messages http://stackoverflow.com/questions/2290016/git-commit-messages-50-72-formatting
