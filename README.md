@@ -5,34 +5,55 @@ At this moment all ideas ar work in progress and master contains quickfix-style 
 
 ## Vision
 
-* **Is fun to own and watch.** It reports what it does so user can be aware of otherwise invisible decisions and actions. Users can modify few memory variables to turn on/off whatever he wan't to focus on.
+* **Is fun to own and watch.** It reports what it does so user can be aware of otherwise invisible decisions and actions. Users can modify few memory variables to turn on/off whatever he want to focus on.
 * **Is conceptually effective.** It runs on ideas like decentralization, self-reflection, demand-supply market and more to come.
 * **Is social.** It allies with other colonies that has the same script, cooperates with them economically and make joint military campaigns.
-* **Is error-prone.** Nothing in world should surprise AI except API patches. And if user messed up with Memory it may detect and solve it, or go crazy, give funny warnings and eventually deal with it, but it will never throw the same error more than once.
+* **Is error-prone.** Nothing in world should surprise AI except API patches. And if user messed up with Memory it may detect and solve it, or go crazy, give funny warnings and eventually deal with it. AI shall never throw the same error twice.
 * **Is CPU and RAM efficient.** It does things as caching, heuristics, function prioritizing and deferred tasks across ticks. The technical stuff under-the-hood has to be good also.
 * **Is scalable.** It has the same code and works as well as just spawned or managing 10 rooms.
 * **Is understandable.** Has good documentation, clear code, meaningful variable names, to-the-point comments and etc. Devs and to-be-devs are here not onlyu to have fun, but also to learn something. So let's make it easy and fun, too.
+
+## Roadmap
+
+Currently I am only putting down to text and testing all ideas. Code mismatch with documentation in most parts, and there are several obsolete and broken parts. Also code contains unrelated basic logic to survive and make testing easier. I expect to move to organized developing somewhat soon, feel free to jump in to discuss concepts through issues or email.
+
+1. Put down concepts into notes and probably test them (focus on *conceptual effectiveness*)
+2. Make-it-work not to die off on its own (focus on *scalability*)
+3. Make-it-work using infrastructure (focus on *scalability*)
+4. Make-it-work defending (focus on *scalability*)
+5. Make-it-work scouting & expanding (focus on *scalability*)
+6. Make-it-work aggression & conquering (focus on *scalability*)
+7. Make-it-work diplomacy (focus on *scalability*)
+8. Rewrite notes into documentation and inline comments (focus on *understandable*)
+9. Review & improve concepts (focus on *conceptual effectiveness*)
+10. Make-it-work anything new (focus on *scalability*)
+11. Improvements & make-it-work Adis - Automatic Debugging & Isolation System (focus on *error-prone*)
+12. Improvements & make-it-work MUI - Memory based User Interface (focus on *fun*)
+13. Improvements and finish 100% expected functionality (focus on *CPU and RAM efficiency*)
+14. Together build wonder worth 161.8mil energy in public server (focus on *fun*)
 
 ## How to participate
 
 #### To use or test
 
 1. Fork
-2. It should work out-of-box (content of master branch). If not, report an issue
+2. Make sure default branch is `master`. That's in Github settings just under repository name
+3. It should work out-of-box (content of **master** branch). If not, report an issue
 
 #### To participate
 
 1. Fork
 2. Change default branch to `develop`. That's in Github settings just under repository name
-3. To trigger screeps.com to repull your code from default branch commit on any branch
-4. Test & play around
+3. It should work and not throw basic errors but use with caution
+4. To trigger screeps.com to repull your code from default branch commit on any branch
+5. Test & play around
 	- To try out new code in 3 seconds, you can add alias in `~/.bash_profile` file
 	
 	````bash
 	alias gitfix='git commit --all --amend --no-edit; git push -f'`.
 	````
 	
-5. Pull request to any of `feature-*` branches, to `develop`, or to next `release-*` branch
+6. Pull request to any of `feature-*` branches, to `develop`, or to next `release-*` branch
 	- Use tab for indents, LF line endings, 120char line length
 	- To make a new branch repeat steps 2.-4
 	- Please use 50/72 commit messages http://stackoverflow.com/questions/2290016/git-commit-messages-50-72-formatting
@@ -75,14 +96,61 @@ At this moment all ideas ar work in progress and master contains quickfix-style 
 3. Cache
 	- `Memory.taps[id/name]` are logistical nodes with pos and statistics. Every other entity has exatly 1 taps and their id/name matches. Not iterated
 	- `Memory.threats[id]` are different types of possible worst-case threats. Iterated to detect if pos is safe
-	- `Memory.rooms[name]` are cached versions of `Game.rooms[name]` and overlays
+	- `Memory.rooms[name]` are cached versions of `Game#[name]` and overlays
 	- `Memory.demand[array]` are cached orders from squads & etc to spawn a creep. Iterated to process them
 	- `Memory.supply[array]` are processed orders in any of of states: "in queue", "spawning", "dispatching", "ready"
 	- `Memory.network[id-id]` are cached paths between taps that are used for navigation and logistics. Uses concept of rightside 2 directional roads
 	- `Memory.zones[id]` are cached logical subsets of room that are used for defence planning
 	- `Memory.deferred[array]` is array that holds all deferred tasks. Iterated to process them
 
-Game.rooms 
+#### Controllers, Sources and Lairs breakdown
+
+````javascript
+Memory.controllers = {
+	<controllerId>: {
+		pos: RoomPosition,
+		spots: 8, // walkable spots next to source.
+	},
+	<controllerId>: ... ,
+}
+````
+
+````javascript
+Memory.sources = {
+	<sourceId>: {
+		pos: RoomPosition,
+		spots: 8, // walkable spots next to source.
+	},
+	<sourceId>: ... ,
+}
+````
+
+````javascript
+Memory.lairs = {
+	<lairId>: {
+		pos: RoomPosition,
+		spots: 8, // walkable spots next to source.
+	},
+	<lair2Id>: ... ,
+}
+````
+		
+#### Rooms breakdown
+
+````javascript
+{
+	decorated: true || false, // whenever room is decorated or clean of flags for recalculation.
+	controller: [ <controllerId> ],
+	sources: [ <sourceId>, ... ],
+	lairs: [ <lairId>, ... ],
+	egroups: [ // Array of isolated exits
+		[ RoomPosition, ... ], // Array of all positions of the exit
+		...,
+	],
+	taps: [ <tapName>, ... ], // All nodes within room
+}
+
+````
 
 #### Decentralized decision-making
 
@@ -157,13 +225,30 @@ Every squad knows when creeps within them have to be replaced, thus signup at ci
 
 Logistics are done by CCMM creeps that act as pipes. From positive pipes they such energy until full, and if next pipe come, it takes energy from the first element in pipe, and moves away before it. Thus first pipe acts as a buffer in the same time. And if there are a lot of pipes, then they will naturally form a pipe.
 
-Taps
+#### Network & Taps
 
-````js
-Memory.taps[uid] = {
-	pos: pos, // place where logistics are supposed to place or take energy.
-	away: 0, // Distance from tap to the nearest owned room. away=0 if it is in owned room.
-};
+Network is collection of all valid taps. For better performance taps are organized in roomTaps that has summed up values and outgoing connections of all taps and pipes within that room.
+
+Saturation is the key element in tap system. All pipe transport system sole goal is to distribute saturation evenly thus picking up energy from oversaturated taps and bringing energy to udersaturated taps starting with the most extreme ones. Saturation is calculated relative to connection that includes all taps and pipes connected through it. If there is a cycle (or any other complex form) then the connection on shortest path to the tap or pipe will include it. Inside room taps and pipes is used, outside of room only roomTaps is used. Formula is as follows: `saturation = (energy + rate*distance) / (energyCapacity + 1)`.
+
+````javascript
+Memory.taps = {
+	<tapName:roomName-x-y>: { // or roomName only for roomTaps
+		pos: RoomPosition, // or roomName for roomTaps
+		inherit: {
+			target: <creepId> || false, // false if need to pickup/drop energy.
+			rate: +1, // expected rate of energy production/consumption per tick.
+			storage: 50,
+		},
+		connections: [
+			{
+				path: [ <direction>, ... ], // from connected tap to this tap.
+				tap: <tapName>,
+				saturation: 0.89, // see above
+				updated: Game.time(), // timestamp of when saturation was calculated.
+			},
+			... ,
+		],
 ````
 
 ## Squads
@@ -191,7 +276,7 @@ Squads is a single entity with a given goal. Squad may temporarly have no creeps
 
 #### Properties
 
-````js
+````javascript
 Memory.squads[id] = { // id is string, uid of target source.
 	tap: "", // uid of owned tap.
 	state: "", // name of squad scope state. Every type has at least "idle" and "normal" states.
@@ -215,7 +300,7 @@ Memory.squads[id] = { // id is string, uid of target source.
 
 The only thing creeps think on their own is safety. Safe means when there is no threat that can be checked by iterating through functions by
 
-````js
+````javascript
 // creep is the object of himself
 var threat = true;
 for(t in Memory.threats){
@@ -231,7 +316,7 @@ if( threat===true ){
 
 #### Squad: *mine*
 
-````js
+````javascript
 Memory.squads[id].uniq = {
 	lair: boolean, // True if source is guarded/blocked by Source Keeper.
 	spots: [], // List of filtered max 3 pos next to source.
@@ -245,7 +330,7 @@ Armagaddeon: `var t = Memory.creeps; for(i in Memory){ Memory[i] = undefined; };
 ## Notes on performance
 
 API calls:
-````js
+````javascript
 // Every line starts with "var t=Game.getUsedCpu(); for(i=0;i<100;i++){ ", ends with "}; console.log(Game.getUsedCpu()-t);" and is entered into console.
 Game.rooms.W4N5.lookAt(25,41); // 100-120 CPU
 Game.rooms.W4N5.find(FIND_STRUCTURES, {filter: { structureType: STRUCTURE_SPAWN }}); // 2.0-6.5 CPU
@@ -257,7 +342,7 @@ test = new RoomPosition(1,1,'W8N4'); // 0.37-0.40
 
 Javascript itself:
 
-````js
+````javascript
 var t=Game.getUsedCpu(); var test="kuku"; for(i=0;i<1000;i++){ test=test||"blah" }; console.log(Game.getUsedCpu()-t); // 2.5-3.0, all types
 var t=Game.getUsedCpu(); var test="kuku"; for(i=0;i<1000;i++){ if(!test){test="blah"}; }; console.log(Game.getUsedCpu()-t); // 1.5-2.0, all types
 ````
