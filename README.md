@@ -1,14 +1,14 @@
-## Vision
+##                                 Vision
 
-* **Is fun to own and watch.** It reports what it does so user can be aware of otherwise invisible decisions and actions. Users can modify few memory variables to turn on/off whatever he want to focus on.
-* **Is conceptually effective.** It runs on ideas like decentralization, self-reflection, demand-supply market and more to come.
-* **Is social.** It allies with other colonies that has the same script, cooperates with them economically and make joint military campaigns.
-* **Is error-prone.** Nothing in world should surprise AI except API patches. And if user messed up with Memory it may detect and solve it, or go crazy, give funny warnings and eventually deal with it. AI shall never throw the same error twice.
-* **Is CPU and RAM efficient.** It does things as caching, heuristics, function prioritizing and deferred tasks across ticks. The technical stuff under-the-hood has to be good also.
-* **Is scalable.** It has the same code and works as well as just spawned or managing 10 rooms.
-* **Is understandable.** Has good documentation, clear code, meaningful variable names, to-the-point comments and etc. Devs and to-be-devs are here not onlyu to have fun, but also to learn something. So let's make it easy and fun, too.
+- **Is fun to own and watch.** It reports what it does so user can be aware of otherwise invisible decisions and actions. Users can modify few memory variables to turn on/off whatever he want to focus on.
+- **Is conceptually effective.** It runs on ideas like decentralization, self-reflection, demand-supply market and more to come.
+- **Is social.** It allies with other colonies that has the same script, cooperates with them economically and make joint military campaigns.
+- **Is error-prone.** Nothing in world should surprise AI except API patches. And if user messed up with Memory it may detect and solve it, or go crazy, give funny warnings and eventually deal with it. AI shall never throw the same error twice.
+- **Is CPU and RAM efficient.** It does things as caching, heuristics, function prioritizing and deferred tasks across ticks. The technical stuff under-the-hood has to be good also.
+- **Is scalable.** It has the same code and works as well as just spawned or managing 10 rooms.
+- **Is understandable.** Has good documentation, clear code, meaningful variable names, to-the-point comments and etc. Devs and to-be-devs are here not onlyu to have fun, but also to learn something. So let's make it easy and fun, too.
 
-## Roadmap
+##                                 Roadmap
 
 Currently I am only putting down to text and testing all ideas. Code mismatch with documentation in most parts, and there are several obsolete and broken parts. Also code contains unrelated basic logic to survive and make testing easier. I expect to move to organized developing somewhat soon, feel free to jump in to discuss concepts through issues or email.
 
@@ -27,7 +27,7 @@ Currently I am only putting down to text and testing all ideas. Code mismatch wi
 13. Improvements and finish 100% expected functionality (focus on *CPU and RAM efficiency*)
 14. Together build wonder worth 161.8mil energy in public server (focus on *fun*)
 
-## How to participate
+##                                 How to participate
 
 #### To use or test
 
@@ -55,7 +55,7 @@ Currently I am only putting down to text and testing all ideas. Code mismatch wi
 	- For big picture here's branching model http://nvie.com/posts/a-successful-git-branching-model/
 	- Also good in general http://www.kmoser.com/articles/Good_Programming_Practices.php
 
-## Concepts
+##                                  Concepts
 
 #### Entities
 
@@ -91,10 +91,10 @@ Currently I am only putting down to text and testing all ideas. Code mismatch wi
 3. Cache
 	- `Memory.taps[id/name]` are logistical nodes with pos and statistics. Every other entity has exatly 1 taps and their id/name matches. Not iterated
 	- `Memory.threats[id]` are different types of possible worst-case threats. Iterated to detect if pos is safe
-	- `Memory.rooms[name]` are cached versions of `Game#[name]` and overlays
+	- `Memory.rooms[name]` are cached versions of `Game.rooms[name]` and overlays
 	- `Memory.demand[array]` are cached orders from squads & etc to spawn a creep. Iterated to process them
 	- `Memory.supply[array]` are processed orders in any of of states: "in queue", "spawning", "dispatching", "ready"
-	- `Memory.network[id-id]` are cached paths between taps that are used for navigation and logistics. Uses concept of rightside 2 directional roads
+	- `Memory.paths[id-id]` are cached paths between taps that are used for navigation and logistics. Uses concept of rightside 2 directional roads
 	- `Memory.zones[id]` are cached logical subsets of room that are used for defence planning
 	- `Memory.deferred[array]` is array that holds all deferred tasks. Iterated to process them
 
@@ -129,7 +129,7 @@ Memory.lairs = {
 	<lair2Id>: ... ,
 }
 ````
-		
+
 #### Rooms breakdown
 
 ````javascript
@@ -153,7 +153,7 @@ If any on entities die, disappear or have corrupted memory it doesn't impact oth
 
 #### Goal
 
-Maximize GCL upgrade rate under _GCL_, _CPU_ and _memory_ constraints by means of
+Maximize GCL upgrade rate under *GCL*, *CPU* and *memory* constraints by means of
 
 1. Increasing total energy extraction rate
 2. Defending infrastructure and "safe territory"
@@ -193,22 +193,22 @@ Main loops doesn't cycle through creeps. Here's the order:
 
 #### Entities
 
-* The Colony (army)
-* Cities (logistics)
-* Squads (local tasks)
-* creeps (within any of three above)
+- The Colony (army)
+- Cities (logistics)
+- Squads (local tasks)
+- creeps (within any of three above)
 
-## The Colony
+##                                  The Colony
 
 Colony has mapped nearby room for their tactical usefulness and best locations for deff squads. According to their placement territory is divided into zones, and each zone has either state
 
-* safe zone - it is behind walls
-* dang(erous) zone - it is between walls and enemy
-* hostile zone - it is in reach of enemy
+- safe zone - it is behind walls
+- dang(erous) zone - it is between walls and enemy
+- hostile zone - it is in reach of enemy
 
 Also Colony maps rooms for their income potential and best spawn placement, thus prioritizing which room to conquer next.
 
-## Cities
+##                                  Cities
 
 Every room has a city. City includes all spawns within it and coordinates all logistics within a room and in nearby neutral rooms, as well construction, links, road management and creep spawning. Cities trade and/or supply other cities.
 
@@ -216,15 +216,31 @@ Every room has a city. City includes all spawns within it and coordinates all lo
 
 Every squad knows when creeps within them have to be replaced, thus signup at city to spawn it in some time in future. Spawns are not allowed to cancel signups but according to priorities it can move them around if two signed at the same time.
 
-#### Logistics (Transportation) - pipe system
+##                                  Logistics (Transportation) - pipe system
 
-Logistics are done by CCMM creeps that act as pipes. From positive pipes they such energy until full, and if next pipe come, it takes energy from the first element in pipe, and moves away before it. Thus first pipe acts as a buffer in the same time. And if there are a lot of pipes, then they will naturally form a pipe.
+**Logistics** are done by CCMM creeps that act as pipes. From positive pipes they pull energy until full, and if next pipe come, it takes energy from the first element in pipe, and moves away before it. Thus first pipe acts as a buffer storage in the same time. And if there are a lot of pipes, then they will naturally form a static pipe.
 
-#### Network & Taps
+**Saturation** is the key element in tap system. All pipe transport system sole goal is to distribute saturation evenly thus picking up energy from oversaturated taps and bringing energy to udersaturated taps starting with the most extreme ones. Saturation is calculated relative to connection that includes all taps and pipes connected through it. If there is a cycle (or any other complex form) then only the connection on shortest path to the tap or pipe will include them. Inside room taps and pipes is used, outside of room only subnetworks is used. Formula is as follows: `saturation = (energy + rate*distance) / (energyCapacity + 1)`.
 
-Network is collection of all valid taps. For better performance taps are organized in roomTaps that has summed up values and outgoing connections of all taps and pipes within that room.
+#### Paths
 
-Saturation is the key element in tap system. All pipe transport system sole goal is to distribute saturation evenly thus picking up energy from oversaturated taps and bringing energy to udersaturated taps starting with the most extreme ones. Saturation is calculated relative to connection that includes all taps and pipes connected through it. If there is a cycle (or any other complex form) then the connection on shortest path to the tap or pipe will include it. Inside room taps and pipes is used, outside of room only roomTaps is used. Formula is as follows: `saturation = (energy + rate*distance) / (energyCapacity + 1)`.
+Every path between taps (see below) is precalculated and cached, as well all non-standard paths longer than 3 steps.
+
+````javascript
+Memory.paths = {
+	<pathName:roomName-x-y_roomName-x-y>: 
+		bump: 123456789, // Last Game.time() when used. TODO: If low memory, old paths will be purged. 
+		path: [ // positions are in alphabetical order
+			{ x:<x>, y: <y>, dir: <direction> }, // steps goes from first to second including both ends
+			... ,
+		],
+	... ,
+}
+````
+
+#### Network & Subnetworks & Taps
+
+Network is collection of all valid taps. For better performance taps are organized in subnetworks that has summed up values and outgoing connections of all taps and pipes within that room.
 
 ````javascript
 Memory.taps = {
@@ -237,7 +253,7 @@ Memory.taps = {
 		},
 		connections: [
 			{
-				path: [ <direction>, ... ], // from connected tap to this tap.
+				path: <pathName>, // from connected tap to this tap.
 				tap: <tapName>,
 				saturation: 0.89, // see above
 				updated: Game.time(), // timestamp of when saturation was calculated.
@@ -246,28 +262,43 @@ Memory.taps = {
 		],
 ````
 
-## Squads
+````javascript
+Memory.subnetworks = {
+	<subnetworks:roomName>: { 
+	roomName: RoomPosition.roomName,
+	inherit: /* the same as Memory.taps.inherit */,
+	connections: /* the same as Memory.taps.connections but with other subnetworks */,
+}
+````
+
+````javascript
+Memory.network = {
+	/* TODO: overall properties */
+}
+````
+
+##                                  Squads
 
 Squads is a single entity with a given goal. Squad may temporarly have no creeps, but eventually will have at least one. Squad is responsible for creep lifecycle management and request replacement from Spawns. Squad performance is measured. Squad is scalable and flexible and the only difference of predefined squads is their aim. Main loop does not cycle through
 
 #### Types
 
 1. Descriptions
-	* mine: Miner squad (including anti-keeper fighters)
-	* upgr: Controller upgrader squad (may be single creep)
-	* zoos: "Zoo for keeper" by maintaining keeper blocked, occupied or killed
-	* deff: defenders blocking a narror place between walls, including ramparts, repairers and contructed walls
-	* scot: scouting unit that also harass defenseless enemies
-	* guer: targets undefended or underdefended enemy creeps and structures
-	* offn: attacking unit meant for serious engagement and sure room conquest
+	- mine: Miner squad (including anti-keeper fighters)
+	- upgr: Controller upgrader squad (may be single creep)
+	- zoos: "Zoo for keeper" by maintaining keeper blocked, occupied or killed
+	- deff: defenders blocking a narror place between walls, including ramparts, repairers and contructed walls
+	- scot: scouting unit that also harass defenseless enemies
+	- guer: targets undefended or underdefended enemy creeps and structures
+	- offn: attacking unit meant for serious engagement and sure room conquest
 2. Goals (to be measured per cost-rate)
-	* mine: maximize energy gather rate from given source
-	* upgr: maximize upgrade rate
-	* zoos: remove source keeper threat
-	* deff: remove player threat for given zone(s)
-	* scot: minimize costs for deff squad + grant vision
-	* guer: maximize (real and potential) enemy costs
-	* offn: conquer room
+	- mine: maximize energy gather rate from given source
+	- upgr: maximize upgrade rate
+	- zoos: remove source keeper threat
+	- deff: remove player threat for given zone(s)
+	- scot: minimize costs for deff squad + grant vision
+	- guer: maximize (real and potential) enemy costs
+	- offn: conquer room
 
 #### Properties
 
@@ -318,13 +349,14 @@ Memory.squads[id].uniq = {
 }
 ````
 
-## Debug snippets
+##                                  Debug snippets
 
 Armagaddeon: `var t = Memory.creeps; for(i in Memory){ Memory[i] = undefined; }; Memory.creeps=t;`
 
-## Notes on performance
+##                                  Notes on performance
 
 API calls:
+
 ````javascript
 // Every line starts with "var t=Game.getUsedCpu(); for(i=0;i<100;i++){ ", ends with "}; console.log(Game.getUsedCpu()-t);" and is entered into console.
 Game.rooms.W4N5.lookAt(25,41); // 100-120 CPU
@@ -342,6 +374,6 @@ var t=Game.getUsedCpu(); var test="kuku"; for(i=0;i<1000;i++){ test=test||"blah"
 var t=Game.getUsedCpu(); var test="kuku"; for(i=0;i<1000;i++){ if(!test){test="blah"}; }; console.log(Game.getUsedCpu()-t); // 1.5-2.0, all types
 ````
 
-## Notes on objects
+##                                  Notes on objects
 
 http://davidwalsh.name/javascript-objects-deconstruction
