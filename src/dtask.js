@@ -47,7 +47,7 @@ module.exports = function(creeps) {
 		console.log(roomName,": overlayNetwork");
 		var room = Game.rooms[roomName];
 		var ram = Memory.rooms[roomName];
-		if(!Memory.rooms[roomName].clean){
+		if(Memory.rooms[roomName] && !Memory.rooms[roomName].clean){
 			for(var i in Game.flags){ if(Game.flags[i].room.name==roomName){ Game.flags[i].remove(); }; };
 			Memory.rooms[roomName].clean = true;
 		};
