@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = class City {
+module.exports = function(){ return class City {
 
 	constructor(name){
 		this.name = name;
@@ -103,4 +103,4 @@ module.exports = class City {
 		};
 	}
 
-};
+}; };

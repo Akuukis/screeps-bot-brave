@@ -1,8 +1,6 @@
 "use strict";
 
-var Squad = require('./squad');
-
-module.exports = class DTask {
+module.exports = function(){ return class DTask {
 
 	// has to be in form of "functionName(arg1, arg2)~comments here"
 	constructor(opts){
@@ -329,4 +327,4 @@ module.exports = class DTask {
 		return true;
 	}
 
-}
+}; };

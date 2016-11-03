@@ -1,8 +1,6 @@
 "use strict";
 
-var helper = require('./helpers');
-
-var Squad = class Squad {
+module.exports = function(){ return class Squad {
 
 	constructor(opts){
 		if(opts.name && DTASKS.has(opts.name)){
@@ -398,6 +396,4 @@ var Squad = class Squad {
 		upgr_tick(){
 		}
 
-};
-
-module.exports = Squad;
+}; };

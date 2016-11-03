@@ -1,8 +1,6 @@
 "use strict";
 
-var DTask = require('./dtask');
-
-module.exports = class Colony {
+module.exports = function(){ return class Colony {
 
 	constructor(name){
 		this.name = name;
@@ -101,4 +99,4 @@ module.exports = class Colony {
 		};
 	}
 
-};
+}; };

@@ -12,10 +12,10 @@ global.posify = helper.posify;
 // var adis =require('./adis');
 
 // Classes
-var Colony = require('./colony');
-var City = require('./city');
-var Squad = require('./squad');
-var DTask = require('./dtask');
+var Colony = require('./colony')();
+var City = require('./city')();
+var Squad = require('./squad')();
+var DTask = require('./dtask')();
 
 // Cache
 global.RECACHE = true;
