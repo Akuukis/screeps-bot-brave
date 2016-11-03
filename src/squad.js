@@ -1,6 +1,36 @@
-module.exports = function(creeps) {
-	var doUpgr = function(id){ };
-	var doMine = function(id){
+"use strict";
+
+module.exports = class Squad {
+
+	constructor(name){
+		this.name = name;
+
+		var city = Memory.cities[this.name];
+		var room = Game.rooms[this.name];
+		if(room){ // If visible.
+			// Memory check.
+			if(!city.spawns){
+				var spawnsRaw = room.find(FIND_MY_SPAWNS);
+				city.spawns = {};
+				for(var i in spawnsRaw){
+					city.spawns[spawnsRaw[i].name] = {
+						queue: {}, // Production, key is time module of 3.
+						stats: {},
+						ready: Math.floor(Game.time/3),
+						next: Math.floor((Game.time-1800)/3)
+					};
+				};
+			};
+			if(!city.ext && city.ext!=0){
+				var ext = room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
+				city.ext = ext ? ext.length : 0;
+			};
+		};
+	}
+
+	doUpgr(id){ }
+	doMine(id){
+		var id = this.id;
 		var squad = Memory.squads.mine[id];
 		if(!squad.name){ squad.name="mine_"+gobi(id).pos.roomName+"-"+gobi(id).pos.x+"-"+gobi(id).pos.y; };
 		if(!squad.uniq){ squad.uniq={}; };
@@ -353,20 +383,11 @@ module.exports = function(creeps) {
 				// Suicide?
 			};
 		};
-	};
-	var doDeff = function(id){ };
-	var doPatr = function(id){ };
-	var doOffn = function(id){ };
-	var doEsco = function(id){ };
-	var doScot = function(id){ };
+	}
+	doDeff(id){ }
+	doPatr(id){ }
+	doOffn(id){ }
+	doEsco(id){ }
+	doScot(id){ }
 
-	return {
-		'doMine': doMine,
-		'doUpgr': doUpgr,
-		'doDeff': doDeff,
-		'doPatr': doPatr,
-		'doOffn': doOffn,
-		'doEsco': doEsco,
-		'doScot': doScot,
-	};
-}();
+};

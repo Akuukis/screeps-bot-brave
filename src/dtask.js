@@ -1,19 +1,33 @@
-module.exports = function(creeps) {
-	var checkMemory = function(){
-		if(Memory.deffered.fn.length!=Memory.deffered.wait.length){ // Check queue.
-			Memory.deffered.fn = [];
-			Memory.deffered.wait = [];
+"use strict";
+
+module.exports = class DTask {
+
+	// has to be in form of "functionName(arg1, arg2)~comments here"
+	constructor(opts){
+		if(DTASKS.has(opts.fn)){
+			return DTASKS.get(opts.fn);
+		}else{
+			this.fn = opts.fn;
+			this.comment = opts.comment;
+			Memory.deferred[opts.fn] = this;
+			DTASKS.set(opts.fn, this);
 		};
-	};
-	var doNext = function(){
-		//console.debug(Memory.deffered.fn[0]);
-		var ok = eval(Memory.deffered.fn[0]);
+	}
+
+	static recache(){
+		for(let key in Memory.deferred) new DTask(Memory.deferred[key]);
+	}
+
+	do(){
+		//console.debug(Memory.deferred.fn[0]);
+		var ok = eval('this.'+this.fn);
 		if(ok){
-			Memory.deffered.fn.shift();
-			Memory.deffered.wait.shift();
+			delete Memory.deferred[this.fn];
+			DTASKS.delete(this.fn);
 		};
-	};
-	var overlayThreats = function(roomName){
+	}
+
+	overlayThreats(roomName){
 		console.log(roomName,": overlayThreats");
 		var lairs = Game.rooms[roomName].find(FIND_STRUCTURES, {filter: { structureType: STRUCTURE_KEEPER_LAIR }});
 		var threats = {};
@@ -38,16 +52,18 @@ module.exports = function(creeps) {
 		Memory.threats = threats;
 		Memory.rooms[roomName].threats = threats;
 		return true;
-	};
-	var overlayDeff = function(roomName){
+	}
+
+	overlayDeff(roomName){
 		Memory.rooms[roomName].deff = true;
 		return true;
-	};
-	var overlayNetwork = function(roomName){
+	}
+
+	overlayNetwork(roomName){
 		console.log(roomName,": overlayNetwork");
 		var room = Game.rooms[roomName];
 		var ram = Memory.rooms[roomName];
-		if(Memory.rooms[roomName] && !Memory.rooms[roomName].clean){
+		if(!Memory.rooms[roomName].clean){
 			for(var i in Game.flags){ if(Game.flags[i].room.name==roomName){ Game.flags[i].remove(); }; };
 			Memory.rooms[roomName].clean = true;
 		};
@@ -298,26 +314,21 @@ module.exports = function(creeps) {
 		// for(var i in Game.flags){ Game.flags[i].remove() };
 		Memory.rooms[roomName].network = true;
 		return true;
-	};
-	var overlayCity = function(roomName){
+	}
+
+	overlayCity(roomName){
 		Memory.rooms[roomName].city = true;
 		return true;
-	};
-	var calcRating = function(roomName){
+	}
+
+	calcRating(roomName){
 		Memory.rooms[roomName].rating = true;
 		return true;
-	};
-	var calcFinish = function(roomName){
+	}
+
+	calcFinish(roomName){
 		Memory.rooms[roomName].finish = true;
 		return true;
-	};
+	}
 
-	return {
-		'checkMemory': checkMemory,
-		'doNext': doNext,
-		'overlayThreats': overlayThreats,
-		'overlayDeff': overlayDeff,
-		'overlayNetwork': overlayNetwork,
-		'overlayCity': overlayCity,
-	};
-}();
+}

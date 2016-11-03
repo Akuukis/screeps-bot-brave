@@ -1,7 +1,12 @@
-module.exports = function(creeps) {
-	var memoryCheck = function(name){
-		var city = Memory.cities[name];
-		var room = Game.rooms[name];
+"use strict";
+
+module.exports = class City {
+
+	constructor(name){
+		this.name = name;
+
+		var city = Memory.cities[this.name];
+		var room = Game.rooms[this.name];
 		if(room){ // If visible.
 			// Memory check.
 			if(!city.spawns){
@@ -21,11 +26,11 @@ module.exports = function(creeps) {
 				city.ext = ext ? ext.length : 0;
 			};
 		};
-	};
+	}
 
-	var spawnQueue = function(name){
-		var city = Memory.cities[name];
-		var room = Game.rooms[name];
+	spawnQueue(){
+		var city = Memory.cities[this.name];
+		var room = Game.rooms[this.name];
 		if(Math.floor(Game.time/3) == Game.time/3){
 			for(var name in city.spawns){
 				var spawn = Game.spawns[name];
@@ -92,10 +97,6 @@ module.exports = function(creeps) {
 				// Do spawn stuff.
 			};
 		};
-	};
+	}
 
-	return {
-		'memoryCheck': memoryCheck,
-		'spawnQueue': spawnQueue,
-	};
-}();
+};

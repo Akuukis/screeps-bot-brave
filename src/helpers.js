@@ -1,4 +1,4 @@
-module.exports = function(creeps) {
+module.exports = function() {
 	var checkMemory = function() {
 		Memory.routine = {creeps:{}};
 		if(!Memory.t){ Memory.t={}; };
@@ -20,10 +20,7 @@ module.exports = function(creeps) {
 		if(!Memory.taps){ Memory.taps={}; };
 		if(!Memory.tmp){ Memory.tmp={}; };
 		if(!Memory.network){ Memory.network={}; };
-		if(!Memory.deffered){ Memory.deffered={}; };
-		if(!Memory.deffered.fn){ Memory.deffered.fn=[]; };
-		if(!Memory.deffered.wait){ Memory.deffered.wait=[]; };
-		if(!Memory.deffered.tmp){ Memory.deffered.tmp=[]; };
+		if(!Memory.deferred){ Memory.deferred={}; };
 	};
 	var threatsFunctions = {
 		lair: function(pos, data){
@@ -73,15 +70,6 @@ module.exports = function(creeps) {
 		};
 		return threats; // Either false (safe) or a number > 1.
 	};
-	function dAdd(fn, name, extra){
-		var found = false;
-		var fullName = ""+fn+"('"+name+"')"+(extra||"");
-		for(var i in Memory.deffered.wait){ if(Memory.deffered.wait[i]==fullName){ found=true; }; };
-		if(!found){
-			Memory.deffered.fn.push(""+fn+"('"+name+"')");
-			Memory.deffered.wait.push(fullName);
-		};
-	};
 	function bodify(bps){
 		var body = [];
 		var translate = {
@@ -123,7 +111,6 @@ module.exports = function(creeps) {
 		'routine': routine,
 		'getID': getID,
 		'isThreat': isThreat,
-		'dAdd': dAdd,
 		'bodify': bodify,
 		'monitorCPU': monitorCPU,
 	};
