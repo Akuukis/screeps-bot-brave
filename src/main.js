@@ -32,14 +32,8 @@ module.exports.loop = function() {
 	//// 0. //// Recache objects in-memory.
 	helper.checkMemory();
 	if(RECACHE){
-		Object.keys(Memory.cities).forEach(name=>{
-			if(!CITIES.has(name)) CITIES.set(name, new City(name));
-		});
-		Object.keys(Memory.squads).forEach(squadType=>{
-			Object.keys(Memory.squads[squadType]).forEach(id=>{
-				if(!SQUADS.has(id)) SQUADS.set(id, new Squad(id, squadType));
-			});
-		});
+		City.recache();
+		Squad.recache();
 		DTask.recache();
 	};
 

@@ -28,6 +28,10 @@ module.exports = class City {
 		};
 	}
 
+	static recache(){
+		Object.keys(Memory.cities).forEach( name=>CITIES.set(name, new City(name)) );
+	}
+
 	spawnQueue(){
 		var city = Memory.cities[this.name];
 		var room = Game.rooms[this.name];

@@ -28,6 +28,12 @@ module.exports = class Squad {
 		};
 	}
 
+	static recache(){
+		Object.keys(Memory.squads).forEach(squadType=>{
+			Object.keys(Memory.squads[squadType]).forEach( id=>SQUADS.set(id, new Squad(id, squadType)) );
+		});
+	};
+
 	doUpgr(id){ }
 	doMine(id){
 		var id = this.id;
