@@ -76,11 +76,6 @@ module.exports = class DTask {
 			var sources = {};
 			for(var s in sourcesRaw){
 				var source = {};
-				if(sourcesRaw[s].pos.findInRange(FIND_STRUCTURES, 5, {filter: { structureType: STRUCTURE_KEEPER_LAIR }}).length > 0) {
-					source.lair = true;
-				}else{
-					source.lair = false;
-				};
 				source.pos = sourcesRaw[s].pos;
 				source.spots = 0;
 				for(var dx=-1;dx<=1;dx++){
@@ -100,7 +95,7 @@ module.exports = class DTask {
 			Memory.rooms[roomName].sources = sources;
 		};
 		console.log(JSON.stringify(ram.sources))
-		for(let id in ram.sources) new Squad(id, {type:'mine', lair: ram.sources[id].lair});
+		for(let id in ram.sources) new Squad(id, {type:'mine'});
 		// Add controller.
 		if(!Memory.rooms[roomName].contr){
 			var contr = Game.rooms[roomName].controller;

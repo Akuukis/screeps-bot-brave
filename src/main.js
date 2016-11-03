@@ -52,7 +52,8 @@ module.exports.loop = function() {
 	//// 5. //// (each) Squad.
 	if(Game.cpu.tickLimit < Game.cpu.bucket){
 		// Just execute all squads.
-		// for(let squad of SQUADS.values()) squad.do();
+		for(let squad of SQUADS.values()) squad.tick();
+		if(pulse) for(let squad of SQUADS.values()) squad.pulse();
 	}else{
 		// Execute all squads in prioritized order.
 		let order = new Set('mine','upgr','deff','patr','offn','esco','scot');
@@ -61,7 +62,8 @@ module.exports.loop = function() {
 		for(let type of order.values()) subArrays[type] = new Array();
 		for(let squad of SQUADS.values()) if(typeof subArrays[squad.type] == 'array') subArrays[squad.type].push(squad);
 		for(let type of order.values()) orderedArray.push.apply(subArrays[type]);
-		orderedArray.forEach( squad=>squad.do() );
+		orderedArray.forEach( squad=>squad.tick() );
+		if(pulse) orderedArray.forEach( squad=>squad.pulse() );
 	};
 
 	//// 6. //// (each) City. Everythin of scope room.
