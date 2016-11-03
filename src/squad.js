@@ -1,38 +1,26 @@
 "use strict";
 
+var helper = require('./helpers');
+
 module.exports = class Squad {
 
-	constructor(name){
-		this.name = name;
-
-		var city = Memory.cities[this.name];
-		var room = Game.rooms[this.name];
-		if(room){ // If visible.
-			// Memory check.
-			if(!city.spawns){
-				var spawnsRaw = room.find(FIND_MY_SPAWNS);
-				city.spawns = {};
-				for(var i in spawnsRaw){
-					city.spawns[spawnsRaw[i].name] = {
-						queue: {}, // Production, key is time module of 3.
-						stats: {},
-						ready: Math.floor(Game.time/3),
-						next: Math.floor((Game.time-1800)/3)
-					};
-				};
+	constructor(id, opts){
+		if(DTASKS.has(id)){
+			return SQUADS.get(id);
+		}else{
+			this.id = id || helper.getID;
+			this.type = opts.type;
+			if(this.type=='mine'){
+				this.lair = opts.lair;
 			};
-			if(!city.ext && city.ext!=0){
-				var ext = room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
-				city.ext = ext ? ext.length : 0;
-			};
+			Memory.squads[this.id] = this;
+			SQUADS.set(this.id, this);
 		};
 	}
 
 	static recache(){
-		Object.keys(Memory.squads).forEach(squadType=>{
-			Object.keys(Memory.squads[squadType]).forEach( id=>SQUADS.set(id, new Squad(id, squadType)) );
-		});
-	};
+		Object.keys(Memory.squads).forEach( id=>SQUADS.set(id, new this(id, Memory.squads[id])) );
+	}
 
 	doUpgr(id){ }
 	doMine(id){

@@ -1,5 +1,7 @@
 "use strict";
 
+var Squad = require('./squad');
+
 module.exports = class DTask {
 
 	// has to be in form of "functionName(arg1, arg2)~comments here"
@@ -97,7 +99,8 @@ module.exports = class DTask {
 			};
 			Memory.rooms[roomName].sources = sources;
 		};
-		for(var i in ram.sources){ if(!Memory.squads.mine[i]){ Memory.squads.mine[i]={}; }; };
+		console.log(JSON.stringify(ram.sources))
+		for(let id in ram.sources) new Squad(id, {type:'mine', lair: ram.sources[id].lair});
 		// Add controller.
 		if(!Memory.rooms[roomName].contr){
 			var contr = Game.rooms[roomName].controller;
@@ -118,7 +121,7 @@ module.exports = class DTask {
 				Memory.rooms[roomName].contr = contrRam;
 			};
 		};
-		for(var i in Memory.rooms[roomName].contr){ if(!Memory.squads.upgr[i]){ Memory.squads.upgr[i]={}; }; };
+		for(let id in Memory.rooms[roomName].contr) new Squad(id, {type:'upgr'});
 		// Add sources + contr to POIs.
 		if(!Memory.rooms[roomName].pois){
 			Memory.rooms[roomName].pois = [];
@@ -127,7 +130,7 @@ module.exports = class DTask {
 		};
 		// Divide exits into groups.
 		if(!Memory.rooms[roomName].egroups){
-			console.log("Doing egroups...");
+			// console.log("Doing egroups...");
 			var exits = room.find(FIND_EXIT);
 			var egroups = [];
 			var last = room.getPositionAt(25,25);
@@ -139,7 +142,7 @@ module.exports = class DTask {
 				};
 				last = exits[i];
 			};
-			console.log(egroups.length);
+			// console.log(egroups.length);
 			Memory.rooms[roomName].egroups = egroups;
 		};
 		// Add important exits. POI->exit & exit->exit
@@ -147,12 +150,12 @@ module.exports = class DTask {
 		if(!Memory.rooms[roomName].shortlist){ Memory.rooms[roomName].shortlist={}; };
 		for(var i=0;i<Memory.rooms[roomName].pois.length;i++){
 			if(!Memory.rooms[roomName].pe[i]){
-				console.log("Doing exits from pe["+i+"]...");
+				// console.log("Doing exits from pe["+i+"]...");
 				var poiPos = room.getPositionAt(Memory.rooms[roomName].pois[i].x,Memory.rooms[roomName].pois[i].y);
 				for(var j=0;j<Memory.rooms[roomName].egroups.length;j++){
 					var egroup = Memory.rooms[roomName].egroups[j];
 					for(var k=0;k<egroup.length;k++){ egroup[k] = new posify(egroup[k]); };
-					console.log(i,j,poiPos,egroup[0],egroup.length);
+					// console.log(i,j,poiPos,egroup[0],egroup.length);
 					var t = poiPos.findClosestByRange(egroup,{ignoreCreeps:true, ignore:[poiPos]});
 					if(!Memory.rooms[roomName].shortlist[t.x+"-"+t.y] && !poiPos.isNearTo(t)){
 						Memory.rooms[roomName].shortlist[t.x+"-"+t.y] = true;
@@ -172,13 +175,13 @@ module.exports = class DTask {
 				var pos1 = posify(Memory.rooms[roomName].pois[i]);
 				var pos2 = posify(Memory.rooms[roomName].pois[j]);
 				if(!Memory.rooms[roomName].paths[pos1.x+"-"+pos1.y+"^"+pos2.x+"-"+pos2.y]){
-					console.log("Doing path from "+pos1.x+"-"+pos1.y+" to "+pos2.x+"-"+pos2.y+"...");
+					// console.log("Doing path from "+pos1.x+"-"+pos1.y+" to "+pos2.x+"-"+pos2.y+"...");
 					var path = room.findPath(pos1,pos2,{ignoreCreeps:true, ignore:[pos1,pos2]});
 					for(var k in path){
 						Memory.rooms[roomName].tiles[path[k].x+"-"+path[k].y] = {x:path[k].x, y:path[k].y};
 					};
 					Memory.rooms[roomName].tiles[pos1.x+"-"+pos1.y] = {x:pos1.x, y:pos1.y}; // Add back starting point of path.
-					console.log(i,j,path.length,pos1,pos2);
+					// console.log(i,j,path.length,pos1,pos2);
 					Memory.rooms[roomName].paths[pos1.x+"-"+pos1.y+"^"+pos2.x+"-"+pos2.y] = true;
 				};
 				if(Game.cpu.getUsed()/Game.cpuLimit>0.8){ return false; };
@@ -206,72 +209,72 @@ module.exports = class DTask {
 					// Move down!
 					Memory.rooms[roomName].tiles[(tile.x  )+"-"+(tile.y+1)] = {x:tile.x  , y:tile.y+1}
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Moved down "+tile.x+"-"+tile.y);
+					// console.log("Moved down "+tile.x+"-"+tile.y);
 				}else if(!bl && !bm && !br && !(!ul && !um && !ur) && room.lookForAt("terrain",tile.x  ,tile.y-1)!="wall" ){
 					// Move up!
 					Memory.rooms[roomName].tiles[(tile.x  )+"-"+(tile.y-1)] = {x:tile.x  , y:tile.y-1}
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Moved up "+tile.x+"-"+tile.y);
+					// console.log("Moved up "+tile.x+"-"+tile.y);
 				}else if(!ul && !ml && !bl && !(!ur && !mr && !br) && room.lookForAt("terrain",tile.x+1,tile.y  )!="wall" ){
 					// Move right!
 					Memory.rooms[roomName].tiles[(tile.x+1)+"-"+(tile.y  )] = {x:tile.x+1, y:tile.y  }
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Moved right "+tile.x+"-"+tile.y);
+					// console.log("Moved right "+tile.x+"-"+tile.y);
 				}else if(!ur && !mr && !br && !(!ul && !ml && !bl) && room.lookForAt("terrain",tile.x-1,tile.y  )!="wall" ){
 					// Move left!
 					Memory.rooms[roomName].tiles[(tile.x-1)+"-"+(tile.y  )] = {x:tile.x-1, y:tile.y  }
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Moved left "+tile.x+"-"+tile.y);
+					// console.log("Moved left "+tile.x+"-"+tile.y);
 				}else if(!ml && !ul && !um && mr && bm){
 					// Integrate down-right!
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Integrated down-right "+tile.x+"-"+tile.y);
+					// console.log("Integrated down-right "+tile.x+"-"+tile.y);
 				}else if(!mr && !ur && !um && ml && bm){
 					// Integrate down-left!
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Integrated down-left "+tile.x+"-"+tile.y);
+					// console.log("Integrated down-left "+tile.x+"-"+tile.y);
 				}else if(!ml && !bl && !bm && mr && um){
 					// Integrate up-right!
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Integrated up-right "+tile.x+"-"+tile.y);
+					// console.log("Integrated up-right "+tile.x+"-"+tile.y);
 				}else if(!mr && !br && !bm && ml && um){
 					// Integrate up-left!
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Integrated up-left "+tile.x+"-"+tile.y);
+					// console.log("Integrated up-left "+tile.x+"-"+tile.y);
 				}else if(!ml && !ul && !um && ur && br && bl && room.lookForAt("terrain",tile.x+1,tile.y  )!="wall" && room.lookForAt("terrain",tile.x  ,tile.y+1)!="wall"){
 					// expand down-right!
 					Memory.rooms[roomName].tiles[(tile.x+1)+"-"+(tile.y  )] = {x:tile.x+1, y:tile.y  }
 					Memory.rooms[roomName].tiles[(tile.x  )+"-"+(tile.y+1)] = {x:tile.x  , y:tile.y+1}
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Expanded down-right "+tile.x+"-"+tile.y);
+					// console.log("Expanded down-right "+tile.x+"-"+tile.y);
 				}else if(!mr && !ur && !um && ul && bl && br && room.lookForAt("terrain",tile.x-1,tile.y  )!="wall" && room.lookForAt("terrain",tile.x  ,tile.y+1)!="wall"){
 					// expand down-left!
 					Memory.rooms[roomName].tiles[(tile.x-1)+"-"+(tile.y  )] = {x:tile.x-1, y:tile.y  }
 					Memory.rooms[roomName].tiles[(tile.x  )+"-"+(tile.y+1)] = {x:tile.x  , y:tile.y+1}
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Expanded down-left "+tile.x+"-"+tile.y);
+					// console.log("Expanded down-left "+tile.x+"-"+tile.y);
 				}else if(!ml && !bl && !bm && ur && br && ul && room.lookForAt("terrain",tile.x+1,tile.y  )!="wall" && room.lookForAt("terrain",tile.x  ,tile.y-1)!="wall"){
 					// expand up-right!
 					Memory.rooms[roomName].tiles[(tile.x+1)+"-"+(tile.y  )] = {x:tile.x+1, y:tile.y  }
 					Memory.rooms[roomName].tiles[(tile.x  )+"-"+(tile.y-1)] = {x:tile.x  , y:tile.y-1}
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Expanded up-right "+tile.x+"-"+tile.y);
+					// console.log("Expanded up-right "+tile.x+"-"+tile.y);
 				}else if(!mr && !br && !bm && ul && bl && ur && room.lookForAt("terrain",tile.x-1,tile.y  )!="wall" && room.lookForAt("terrain",tile.x  ,tile.y-1)!="wall"){
 					// expand up-left!
 					Memory.rooms[roomName].tiles[(tile.x-1)+"-"+(tile.y  )] = {x:tile.x-1, y:tile.y  }
 					Memory.rooms[roomName].tiles[(tile.x  )+"-"+(tile.y-1)] = {x:tile.x  , y:tile.y-1}
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Expanded up-left "+tile.x+"-"+tile.y);
+					// console.log("Expanded up-left "+tile.x+"-"+tile.y);
 				}else if(um && mr && bm && ml){
 					// Dissolve!
 					Memory.rooms[roomName].tiles[i] = undefined;
-					console.log("Integrated up-left "+tile.x+"-"+tile.y);
+					// console.log("Integrated up-left "+tile.x+"-"+tile.y);
 				}else{
 					action--;
 				};
 			};
 			var count = 0; for(var i in Memory.rooms[roomName].tiles){ if(Memory.rooms[roomName].tiles[i]){ count++;}; };
-			console.log("Tiles: ",action, count, count - Memory.rooms[roomName].lastTiles);
+			// console.log("Tiles: ",action, count, count - Memory.rooms[roomName].lastTiles);
 			if(count - countLast >= -2){
 				Memory.rooms[roomName].condensed++;
 			}else{
