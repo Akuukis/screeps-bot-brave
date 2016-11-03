@@ -1,3 +1,7 @@
+## Intro
+
+At this moment all ideas ar work in progress and master contains quickfix-style scripts for creeps to be able to work for GCL.
+
 ##                                 Vision
 
 - **Is fun to own and watch.** It reports what it does so user can be aware of otherwise invisible decisions and actions. Users can modify few memory variables to turn on/off whatever he want to focus on.
@@ -43,11 +47,11 @@ Currently I am only putting down to text and testing all ideas. Code mismatch wi
 4. To trigger screeps.com to repull your code from default branch commit on any branch
 5. Test & play around
 	- To try out new code in 3 seconds, you can add alias in `~/.bash_profile` file
-	
+
 	````bash
 	alias gitfix='git commit --all --amend --no-edit; git push -f'`.
 	````
-	
+
 6. Pull request to any of `feature-*` branches, to `develop`, or to next `release-*` branch
 	- Use tab for indents, LF line endings, 120char line length
 	- To make a new branch repeat steps 2.-4
@@ -228,8 +232,8 @@ Every path between taps (see below) is precalculated and cached, as well all non
 
 ````javascript
 Memory.paths = {
-	<pathName:roomName-x-y_roomName-x-y>: 
-		bump: 123456789, // Last Game.time() when used. TODO: If low memory, old paths will be purged. 
+	<pathName:roomName-x-y_roomName-x-y>:
+		bump: 123456789, // Last Game.time() when used. TODO: If low memory, old paths will be purged.
 		path: [ // positions are in alphabetical order
 			{ x:<x>, y: <y>, dir: <direction> }, // steps goes from first to second including both ends
 			... ,
@@ -264,7 +268,7 @@ Memory.taps = {
 
 ````javascript
 Memory.subnetworks = {
-	<subnetworks:roomName>: { 
+	<subnetworks:roomName>: {
 	roomName: RoomPosition.roomName,
 	inherit: /* the same as Memory.taps.inherit */,
 	connections: /* the same as Memory.taps.connections but with other subnetworks */,
