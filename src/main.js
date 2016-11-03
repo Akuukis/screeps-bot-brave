@@ -45,19 +45,24 @@ module.exports.loop = function() {
 	global.pulse = COLONY.pulse();
 
 	//// 4. //// (each) City (priority tasks).
-	Object.keys(Memory.cities).forEach(name=>{
-		if(!CITIES.has(name)) CITIES.set(name, new City(name));
-		CITIES.get(name).spawnQueue();
-	});
+	for(let city of CITIES.values()){
+		city.spawnQueue();
+	};
 
-	//// 5. //// (each) Squad tasks in order.
-	// Object.keys(Memory.squads.mine).forEach(function(id){ squad.doMine(id); });
-	// Object.keys(Memory.squads.upgr).forEach(function(id){ squad.doUpgr(id); });
-	// Object.keys(Memory.squads.deff).forEach(function(id){ squad.doDeff(id); });
-	// Object.keys(Memory.squads.patr).forEach(function(id){ squad.doPatr(id); });
-	// Object.keys(Memory.squads.offn).forEach(function(id){ squad.doOffn(id); });
-	// Object.keys(Memory.squads.esco).forEach(function(id){ squad.doEsco(id); });
-	// Object.keys(Memory.squads.scot).forEach(function(id){ squad.doScot(id); });
+	//// 5. //// (each) Squad.
+	if(Game.cpu.tickLimit < Game.cpu.bucket){
+		// Just execute all squads.
+		// for(let squad of SQUADS.values()) squad.do();
+	}else{
+		// Execute all squads in prioritized order.
+		let order = new Set('mine','upgr','deff','patr','offn','esco','scot');
+		let subArrays = {};
+		let orderedArray = new Array();
+		for(let type of order.values()) subArrays[type] = new Array();
+		for(let squad of SQUADS.values()) if(typeof subArrays[squad.type] == 'array') subArrays[squad.type].push(squad);
+		for(let type of order.values()) orderedArray.push.apply(subArrays[type]);
+		orderedArray.forEach( squad=>squad.do() );
+	};
 
 	//// 6. //// (each) City. Everythin of scope room.
 	// Memory.cities.forEach(function(name){ city.spawnQueue(name); });
@@ -68,11 +73,8 @@ module.exports.loop = function() {
 	COLONY.transits();
 
 	//// 8. //// Deferred tasks. Anything not urgent and CPU intensive goes here.
-
 	for(let dTask of DTASKS.values()){
-		console.log('doing', Game.cpu.tickLimit, Game.cpu.getUsed());
-		if(Game.cpu.tickLimit<400) break;
-		if(Game.cpu.getUsed()/Game.tickLimit>0.6) break;
+		if(Game.cpu.getUsed()/Game.tickLimit>0.5) break;
 		dTask.do();
 	}
 
