@@ -1,57 +1,72 @@
 "use strict";
 
+//// Variables.
 var COLONY_NAME = 'Akuukis Swarm';
 
-// Requires
+
+//// Helpers.
 // var _ = require('lodash');
 global.helper = require('./helpers');
 helper.checkMemory();
 global.getID = helper.getID;
 global.gobi = helper.gobi;
 global.posify = helper.posify;
-global.markets = require('./market');
+global.RECACHE = true;
 
+
+//// Routines.
+global.markets = require('./market');
 // var adis =require('./adis');
 
-// Classes
+
+//// Classes.
 var DTask = require('./dtask');
 var Colony = require('./colony');
 var City = require('./city');
 var Squad = require('./squad');
 
-// Cache
-global.RECACHE = true;
+
+//// Global entities.
 global.COLONY = new Colony(COLONY_NAME);
 global.CITIES = new Map();
 global.SQUADS = new Map();
 global.DTASKS = new Map();
 
+
+//// Temporarly.
 global.obselete = require('./obselete');
 
+
+//// Main loop.
 module.exports.loop = function() {
+
 	// return;
 
-	//// 0. //// Recache objects in-memory.
+
+	//// 0. //// Build objects from Memory to RAM.
 	helper.checkMemory();
 	if(RECACHE){
 		City.recache();
 		Squad.recache();
 		DTask.recache();
+		//Market.recache();
 	};
 
-	//// 1. //// Adis - Automatic Debugging & Isolation System. a.k.a. self-debugger.
 
-	//// 2. //// Markets.
-
-	//// 3. //// Colony (priority tasks).
+	//// Entity acts: Colony.
 	global.pulse = COLONY.pulse();
+	Object.keys(Game.rooms).forEach(function(id){ COLONY.overlay(id); }); // Make overlay for each unexplored room.
+	// Memory.demand.forEach(function(id){ COLONY.distribute(id); }); // Distribute spawning demands to spawns.
+	COLONY.transits();
 
-	//// 4. //// (each) City (priority tasks).
+
+	//// Entities acts: Cities.
 	for(let city of CITIES.values()){
 		city.spawnQueue();
 	};
 
-	//// 5. //// (each) Squad.
+
+	//// Entities acts: Squads.
 	if(Game.cpu.tickLimit < Game.cpu.bucket){
 		// Just execute all squads.
 		for(let squad of SQUADS.values()) squad.tick();
@@ -68,26 +83,24 @@ module.exports.loop = function() {
 		if(pulse) orderedArray.forEach( squad=>squad.pulse() );
 	};
 
-	//// 6. //// (each) City. Everythin of scope room.
-	// Memory.cities.forEach(function(name){ city.spawnQueue(name); });
 
-	//// 7. //// The Colony. Everything of scope global.
-	Object.keys(Game.rooms).forEach(function(id){ COLONY.overlay(id); }); // Make overlay for each unexplored room.
-	// Memory.demand.forEach(function(id){ COLONY.distribute(id); }); // Distribute spawning demands to spawns.
-	COLONY.transits();
-
-	//// 8. //// Deferred tasks. Anything not urgent and CPU intensive goes here.
+	//// Deferred tasks: anything not urgent and CPU intensive goes here.
 	for(let dTask of DTASKS.values()){
 		if(Game.cpu.getUsed()/Game.tickLimit>0.5) break;
 		dTask.do();
 	}
 
-	//// Old code to be removed.
+
+	//// Temporarly: code to be removed.
 	obselete.loop();
 
-	//// 9. //// statistics.
+
+	//// Statistics.
 	helper.monitorCPU();
 
+
+	//// Cleanup.
 	global.RECACHE = false;
+
 };
 // END. Leave empty line below.
