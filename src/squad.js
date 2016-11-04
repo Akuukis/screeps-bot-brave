@@ -44,6 +44,9 @@ module.exports = class Squad {
 			};
 			if(!this.uniq){
 				let uniq = {};
+				let source = {
+					pos: posify(gobi(id).pos),
+				};
 				{  // .lair & .fort
 					var lair = gobi(id).pos.findInRange(FIND_STRUCTURES, 5, {filter: { structureType: STRUCTURE_KEEPER_LAIR }})[0];
 					if(lair) {
@@ -72,79 +75,41 @@ module.exports = class Squad {
 						uniq.fort = false;
 					};
 				};
-				{  // .tap & .spots
-					console.log("squads.mine["+id+"].tap = ...constructing... ");
-					console.log("squads.mine["+id+"].spots = ...constructing... ");
-					var source = {
-						pos: posify(gobi(id).pos),
-						spots: [],
-					};
+				{  // .spotsPos
+					let spots = [];
 					// Search all spots next to source.
-					for(var dx=-1;dx<=1;dx++){
-						for(var dy=-1;dy<=1;dy++){
-							source.spots.push( new RoomPosition(source.pos.x+dx,source.pos.y+dy,source.pos.roomName) );
-							var objs = Game.rooms[source.pos.roomName].lookAt(source.spots[source.spots.length-1]);
-							objs.forEach(function(obj){	if(obj.type == 'terrain' && obj.terrain == 'wall'){ source.spots.pop(); }; });
+					for(let dx=-1;dx<=1;dx++){
+						for(let dy=-1;dy<=1;dy++){
+							spots.push( new RoomPosition(source.pos.x+dx,source.pos.y+dy,source.pos.roomName) );
+							let objs = Game.rooms[source.pos.roomName].lookAt(spots[spots.length-1]);
+							objs.forEach( obj=>{ if(obj.type == 'terrain' && obj.terrain == 'wall'){spots.pop()}; });
 						};
 					};
-					// Test every pos next to every spot.
-					var taps = {};
-					var best = {score:100, id:""};
-					for(var i in source.spots){
-						var spot = source.spots[i];
-						for(var dx=-1;dx<=1;dx++){
-							for(var dy=-1;dy<=1;dy++){
-								// Exclude pos==spot, already checked pos and if wall.
-								var tap = new RoomPosition(spot.x+dx,spot.y+dy,spot.roomName);
-								if((dx!=0 || dy!=0) && !taps["X"+(tap.x)+"Y"+(tap.y)]){
-									var objs = Game.rooms[spot.roomName].lookAt(tap);
-									var ok = true;
-									objs.forEach(function(obj){	if(obj.type == 'terrain' && obj.terrain == 'wall'){ ok = false; }; });
-									if(ok){
-										// Calculate ranges to spots.
-										var ranges = [];
-										//var spotFort = source.spots.push(squad.uniq.fort.pos);
-										for(var s in source.spots){
-											var r = tap.findPathTo(source.spots[s]).length;
-											ranges[ranges.length] = {d:r, s:source.spots[s]};
-											var index = ranges.length;
-											while(r<ranges[index-1].d && index>0){
-												ranges[index] = ranges[index-1];
-												ranges[index-1] = {d:r, s:source.spots[s]};
-												index--;
-											};
-										};
-										// Take at max 2 or less spots and save.
-										//console.log(id,i,"START",ranges.length,ranges);
-										var cut = ranges.slice(0,Math.min(2,source.spots.length)); //TODO.
-										//if(squad.uniq.lair){ cut.push(squad.uniq.fort.pos); }; // Insert fort position for consideration.
-										ranges = {d:0, s:[]};
-										for(var j in cut){
-											ranges.d = ranges.d + cut[j].d;
-											ranges.s.push(cut[j].s);
-										};
-										//ranges = ranges.reduce(function(a,b){ return {d:a.d+b.d, s:a.s.concat(b.s)}; })
-										//console.log(id,i,"END  ", ranges.d, ranges.s.length);
-										taps["X"+(tap.x)+"Y"+(tap.y)] = tap;
-										if(ranges.d<best.score){ best={score:ranges.d, spots:ranges.s, id:"X"+(tap.x)+"Y"+(tap.y)}; };
-									};
-								};
-							};
+					uniq.spotsPos = spots;
+				};
+				{  // .tapPos
+					let taps = [];
+					let highscore = 0;
+					uniq.spotsPos.forEach( spotPos=>{
+						let tap = {pos: spotPos, score: 0};
+						for(let k in uniq.spotsPos){
+							let dist = tap.pos.findPathTo(uniq.spotsPos[k]).length;
+							if(dist == 1) tap.score++;
 						};
-					};
-					//for(var i in taps){ console.log("taps",i,taps[i]) };
-					//for(var i in best){ console.log("best",i,best[i]) };
-					var bt = taps[best.id];
-					//for(var i in bt){ if(typeof bt[i] != "function"){ console.log("bt",i,bt[i]) }; };
-					uniq.tap = bt.roomName+"_"+bt.x+"_"+bt.y;
-					uniq.spots = best.spots;
-					if(!Memory.taps[uniq.tap]) Memory.taps[uniq.tap] = { pos: posify(bt) };
+						taps.push(tap);
+						if(tap.score > highscore) highscore = tap.score;
+					});
+					taps.filter( tap=>tap.score==highscore );
+					// TODO choose closest tap, not random first tap.
+					uniq.tapPos = taps[0].pos;
+
+					// if(!Memory.taps[uniq.tap]) Memory.taps[uniq.tap] = { pos: posify(bt) };
 					// if(!Memory.taps[squad.tap].distance){
 					// 	console.log("Memory.taps["+squad.tap+"].distance = ...constructing... ");
-					// 	var distance = Number.MAX_VALUE;
-					// 	for(var j in Game.spawns){
-					// 		var pos = posify(Memory.taps[squad.tap].pos);
-					// 		var path = pos.findPathTo(Game.spawns[j]);
+					// 	let distance = Number.MAX_VALUE;
+					// 	for(let j in Game.spawns){
+					// 		let pos = posify(Memory.taps[squad.tap].pos);
+					// 		let path = pos.findPathTo(Game.spawns[j]);
 					// 		//console.log(Memory.taps[squad.tap].pos,path,path.length,path[path.length-1]);
 					// 		if(path[path.length-1].x==0  ||
 					// 			 path[path.length-1].x==50 ||
