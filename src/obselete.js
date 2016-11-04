@@ -1,4 +1,76 @@
+
+function getID(){
+	var id = Game.time;
+	if( id>Memory.lastId ){
+		Memory.lastId = id;
+		return id % 1800;
+	}else{
+		Memory.lastId++;
+		return Memory.lastId % 1800;
+	};
+};
+
 module.exports = function(creeps) {
+
+	function init(){
+		if(!Memory.rooms){ Memory.rooms={}; };
+		if(!Memory.cities){ Memory.cities={}; };
+		Object.keys(Game.rooms).forEach( id=>{
+			var room = Game.rooms[id];
+			var roomName = room.name;
+			if(!Memory.rooms[room.name]){ Memory.rooms[room.name]={}; };
+			if(room.controller && room.controller.my && !Memory.cities[room.name]){ Memory.cities[room.name]={}; };
+			if(!Memory.rooms[roomName].sources){
+				var sourcesRaw = Game.rooms[roomName].find(FIND_SOURCES);
+				var sources = {};
+				for(var s in sourcesRaw){
+					var source = {};
+					if(sourcesRaw[s].pos.findInRange(FIND_STRUCTURES, 5, {filter: { structureType: STRUCTURE_KEEPER_LAIR }}).length > 0) {
+						source.lair = true;
+					}else{
+						source.lair = false;
+					};
+					source.pos = sourcesRaw[s].pos;
+					source.spots = 0;
+					for(var dx=-1;dx<=1;dx++){
+						for(var dy=-1;dy<=1;dy++){
+							var look = Game.rooms[roomName].lookAt(source.pos.x+dx,source.pos.y+dy,source.pos.roomName);
+							var string = "";
+							source.spots++;
+							look.forEach(function(lookObject){
+								string = string + lookObject.type + (lookObject.terrain||"") + " ";
+								if(lookObject.type == 'terrain' && lookObject.terrain == 'wall'){ source.spots--;	};
+							});
+							//if(s==0){ console.log(source.pos.x+dx,source.pos.y+dy," - ",look.length, string); };
+						};
+					};
+					sources[sourcesRaw[s].id] = source;
+				};
+				Memory.rooms[roomName].sources = sources;
+			};
+			// Add controller.
+			if(!Memory.rooms[roomName].contr){
+				var contr = Game.rooms[roomName].controller;
+				if(contr){
+					var contrRam = {};
+					contrRam[contr.id] = {};
+					contrRam[contr.id].pos = contr.pos;
+					var spots = [];
+					// Search all spots next to source.
+					for(var dx=-1;dx<=1;dx++){
+						for(var dy=-1;dy<=1;dy++){
+							spots.push( new RoomPosition(contr.pos.x+dx,contr.pos.y+dy,contr.pos.roomName) );
+							var objs = Game.rooms[contr.pos.roomName].lookAt(spots[spots.length-1]);
+							objs.forEach(function(obj){	if(obj.type == 'terrain' && obj.terrain == 'wall'){ spots.pop(); }; });
+						};
+					};
+					contrRam[contr.id].spots = spots;
+					Memory.rooms[roomName].contr = contrRam;
+				};
+			};
+		});
+	};
+
 	var loop = function(){
 		var pipes = {
 			safe: [],
@@ -75,7 +147,7 @@ module.exports = function(creeps) {
 		};
 		function roleMiner(creep){
 			if(Memory.creeps[creep.name].target){
-				if(creep.pos.getRangeTo(gobi(Memory.creeps[creep.name].target).pos) > 1) {
+				if(creep.pos.getRangeTo(Game.getObjectById(Memory.creeps[creep.name].target).pos) > 1) {
 					creep.moveTo(Game.getObjectById(Memory.creeps[creep.name].target).pos);
 				} else {
 					creep.harvest(Game.getObjectById(Memory.creeps[creep.name].target));
@@ -282,7 +354,24 @@ module.exports = function(creeps) {
 		};
 	};
 
+	function reportCPU(){
+		var tail = 16;
+		Memory.CPU = Memory.CPU || [];
+		Memory.CPU[Game.time%tail] = Game.cpu.getUsed(),"of",Game.cpuLimit;
+		if(pulse){
+			var avgCPU = 0;
+			for(var k in Memory.CPU) {avgCPU=avgCPU+Memory.CPU[k]; };
+			avgCPU = Math.round(avgCPU/Memory.CPU.length*100)/100;
+			var stdevCPU = 0;
+			for(var k in Memory.CPU) {stdevCPU=stdevCPU+(Memory.CPU[k]-avgCPU)*(Memory.CPU[k]-avgCPU); };
+			stdevCPU=Math.round(Math.sqrt(stdevCPU)/tail*100)/100;
+			console.log("CPU:",avgCPU,"+/-",stdevCPU);
+		};
+	};
+
 	return {
-		'loop': loop
+		'init': init,
+		'loop': loop,
+		'reportCPU': reportCPU,
 	};
 }();
