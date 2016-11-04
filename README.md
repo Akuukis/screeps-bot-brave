@@ -2,6 +2,8 @@
 
 At this moment all ideas ar work in progress and master contains quickfix-style scripts for creeps to be able to work for GCL.
 
+> Check out `legacy` branch for simple code that runs a room on 3.50 CPU/tick.
+
 ##                                 Vision
 
 - **Is fun to own and watch.** It reports what it does so user can be aware of otherwise invisible decisions and actions. Users can modify few memory variables to turn on/off whatever he want to focus on.
@@ -48,9 +50,9 @@ Currently I am only putting down to text and testing all ideas. Code mismatch wi
 5. Test & play around
 	- To try out new code in 3 seconds, you can add alias in `~/.bash_profile` file
 
-	````bash
+	```bash
 	alias gitfix='git commit --all --amend --no-edit; git push -f'`.
-	````
+	```
 
 6. Pull request to any of `feature-*` branches, to `develop`, or to next `release-*` branch
 	- Use tab for indents, LF line endings, 120char line length
@@ -104,7 +106,7 @@ Currently I am only putting down to text and testing all ideas. Code mismatch wi
 
 #### Controllers, Sources and Lairs breakdown
 
-````javascript
+```js
 Memory.controllers = {
 	<controllerId>: {
 		pos: RoomPosition,
@@ -112,9 +114,9 @@ Memory.controllers = {
 	},
 	<controllerId>: ... ,
 }
-````
+```
 
-````javascript
+```js
 Memory.sources = {
 	<sourceId>: {
 		pos: RoomPosition,
@@ -122,9 +124,9 @@ Memory.sources = {
 	},
 	<sourceId>: ... ,
 }
-````
+```
 
-````javascript
+```js
 Memory.lairs = {
 	<lairId>: {
 		pos: RoomPosition,
@@ -132,11 +134,11 @@ Memory.lairs = {
 	},
 	<lair2Id>: ... ,
 }
-````
+```
 
 #### Rooms breakdown
 
-````javascript
+```js
 {
 	decorated: true || false, // whenever room is decorated or clean of flags for recalculation.
 	controller: [ <controllerId> ],
@@ -149,7 +151,7 @@ Memory.lairs = {
 	taps: [ <tapName>, ... ], // All nodes within room
 }
 
-````
+```
 
 #### Decentralized decision-making
 
@@ -230,7 +232,7 @@ Every squad knows when creeps within them have to be replaced, thus signup at ci
 
 Every path between taps (see below) is precalculated and cached, as well all non-standard paths longer than 3 steps.
 
-````javascript
+```js
 Memory.paths = {
 	<pathName:roomName-x-y_roomName-x-y>:
 		bump: 123456789, // Last Game.time() when used. TODO: If low memory, old paths will be purged.
@@ -240,13 +242,13 @@ Memory.paths = {
 		],
 	... ,
 }
-````
+```
 
 #### Network & Subnetworks & Taps
 
 Network is collection of all valid taps. For better performance taps are organized in subnetworks that has summed up values and outgoing connections of all taps and pipes within that room.
 
-````javascript
+```js
 Memory.taps = {
 	<tapName:roomName-x-y>: { // or roomName only for roomTaps
 		pos: RoomPosition, // or roomName for roomTaps
@@ -264,22 +266,28 @@ Memory.taps = {
 			},
 			... ,
 		],
-````
+		... ,
+	},
+	... ,
+};
+```
 
-````javascript
+```js
 Memory.subnetworks = {
 	<subnetworks:roomName>: {
-	roomName: RoomPosition.roomName,
-	inherit: /* the same as Memory.taps.inherit */,
-	connections: /* the same as Memory.taps.connections but with other subnetworks */,
-}
-````
+		roomName: RoomPosition.roomName,
+		inherit: /* the same as Memory.taps.inherit */,
+		connections: /* the same as Memory.taps.connections but with other subnetworks */,
+	}
+	... ,
+};
+```
 
-````javascript
+```js
 Memory.network = {
 	/* TODO: overall properties */
 }
-````
+```
 
 ##                                  Squads
 
@@ -306,7 +314,7 @@ Squads is a single entity with a given goal. Squad may temporarly have no creeps
 
 #### Properties
 
-````javascript
+```js
 Memory.squads[id] = { // id is string, uid of target source.
 	tap: "", // uid of owned tap.
 	state: "", // name of squad scope state. Every type has at least "idle" and "normal" states.
@@ -323,14 +331,14 @@ Memory.squads[id] = { // id is string, uid of target source.
 	creeps: [], // a list of creep IDs.
 	perf: {}, // performance ratios.
 	uniq: {}, // unique to each type.
-}
-````
+};
+```
 
 #### Creep-level decisionmaking
 
 The only thing creeps think on their own is safety. Safe means when there is no threat that can be checked by iterating through functions by
 
-````javascript
+```js
 // creep is the object of himself
 var threat = true;
 for(t in Memory.threats){
@@ -342,16 +350,16 @@ if( threat===true ){
 }else if( threat ){
 	console.log("I am safe at minimum " + threat + " more ticks.");
 };
-````
+```
 
 #### Squad: *mine*
 
-````javascript
+```js
 Memory.squads[id].uniq = {
 	lair: boolean, // True if source is guarded/blocked by Source Keeper.
 	spots: [], // List of filtered max 3 pos next to source.
 }
-````
+```
 
 ##                                  Debug snippets
 
@@ -361,7 +369,7 @@ Armagaddeon: `var t = Memory.creeps; for(i in Memory){ Memory[i] = undefined; };
 
 API calls:
 
-````javascript
+```js
 // Every line starts with "var t=Game.getUsedCpu(); for(i=0;i<100;i++){ ", ends with "}; console.log(Game.getUsedCpu()-t);" and is entered into console.
 Game.rooms.W4N5.lookAt(25,41); // 100-120 CPU
 Game.rooms.W4N5.find(FIND_STRUCTURES, {filter: { structureType: STRUCTURE_SPAWN }}); // 2.0-6.5 CPU
@@ -369,14 +377,14 @@ Game.rooms.W4N5.find(FIND_DROPPED_ENERGY); // 1.5-5.5 CPU
 Game.spawns["Spawn1"]; // 0.2-0.35 CPU
 Game.getObjectById("557293f459189a99084ffa68"); // 0.2-0.35 CPU
 test = new RoomPosition(1,1,'W8N4'); // 0.37-0.40
-````
+```
 
 Javascript itself:
 
-````javascript
+```js
 var t=Game.getUsedCpu(); var test="kuku"; for(i=0;i<1000;i++){ test=test||"blah" }; console.log(Game.getUsedCpu()-t); // 2.5-3.0, all types
 var t=Game.getUsedCpu(); var test="kuku"; for(i=0;i<1000;i++){ if(!test){test="blah"}; }; console.log(Game.getUsedCpu()-t); // 1.5-2.0, all types
-````
+```
 
 ##                                  Notes on objects
 
