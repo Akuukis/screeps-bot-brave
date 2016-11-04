@@ -43,7 +43,7 @@ module.exports.loop = function() {
 	// return;
 
 
-	//// 0. //// Build objects from Memory to RAM.
+	//// 0. //// Global entities: Build from Memory to RAM.
 	helper.checkMemory();
 	if(RECACHE){
 		City.recache();

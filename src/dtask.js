@@ -1,6 +1,11 @@
 "use strict";
 
+
+var MEM = 'deferred';
+
+
 var Squad = require('./squad');
+
 
 module.exports = class DTask {
 
@@ -11,20 +16,20 @@ module.exports = class DTask {
 		}else{
 			this.fn = opts.fn;
 			this.comment = opts.comment;
-			Memory.deferred[opts.fn] = this;
+			Memory[MEM][opts.fn] = this;
 			DTASKS.set(opts.fn, this);
 		};
 	}
 
 	static recache(){
-		for(let key in Memory.deferred) new DTask(Memory.deferred[key]);
+		Object.keys(Memory[MEM]).forEach( fn  =>DTASKS.set(fn  , new this(Memory[MEM][fn])) );
 	}
 
 	do(){
-		//console.debug(Memory.deferred.fn[0]);
+		//console.debug(Memory[MEM].fn[0]);
 		var ok = eval('this.'+this.fn);
 		if(ok){
-			delete Memory.deferred[this.fn];
+			delete Memory[MEM][this.fn];
 			DTASKS.delete(this.fn);
 		};
 	}

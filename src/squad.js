@@ -1,5 +1,9 @@
 "use strict";
 
+
+var MEM = 'squads';
+
+
 module.exports = class Squad {
 
 	constructor(opts){
@@ -20,19 +24,19 @@ module.exports = class Squad {
 
 			this.init();
 
-			if(!Memory.squads[this.name]) Memory.squads[this.name] = {};
-			this.mem = Memory.squads[this.name];
+			if(!Memory[MEM][this.name]) Memory[MEM][this.name] = {};
+			this.mem = Memory[MEM][this.name];
 
 			[
 				'id', 'type', 'name', 'state', 'creeps', 'uniq'
-			].forEach( key=>Memory.squads[this.name][key]=this[key] );
+			].forEach( key=>Memory[MEM][this.name][key]=this[key] );
 
 			SQUADS.set(this.id, this);
 		};
 	}
 
 	static recache(){
-		Object.keys(Memory.squads).forEach( id=>SQUADS.set(id, new this(Memory.squads[id])) );
+		Object.keys(Memory[MEM]).forEach( name=>SQUADS.set(name, new this(Memory[MEM][name])) );
 	}
 
 	// Mine

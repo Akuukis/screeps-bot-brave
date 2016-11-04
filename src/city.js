@@ -1,11 +1,15 @@
 "use strict";
 
+
+var MEM = 'cities';
+
+
 module.exports = class City {
 
 	constructor(name){
 		this.name = name;
 
-		var city = Memory.cities[this.name];
+		var city = Memory[MEM][this.name];
 		var room = Game.rooms[this.name];
 		if(room){ // If visible.
 			// Memory check.
@@ -29,11 +33,11 @@ module.exports = class City {
 	}
 
 	static recache(){
-		Object.keys(Memory.cities).forEach( name=>CITIES.set(name, new City(name)) );
+		Object.keys(Memory[MEM]).forEach( name=>CITIES.set(name, new this(name)) );
 	}
 
 	spawnQueue(){
-		var city = Memory.cities[this.name];
+		var city = Memory[MEM][this.name];
 		var room = Game.rooms[this.name];
 		if(Math.floor(Game.time/3) == Game.time/3){
 			for(var name in city.spawns){
