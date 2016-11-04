@@ -5,9 +5,11 @@ var COLONY_NAME = 'Akuukis Swarm';
 // Requires
 // var _ = require('lodash');
 global.helper = require('./helpers');
+helper.checkMemory();
 global.getID = helper.getID;
 global.gobi = helper.gobi;
 global.posify = helper.posify;
+global.markets = require('./market');
 
 // var adis =require('./adis');
 
@@ -16,7 +18,6 @@ var DTask = require('./dtask');
 var Colony = require('./colony');
 var City = require('./city');
 var Squad = require('./squad');
-// var Market = require('./market')();
 
 // Cache
 global.RECACHE = true;
@@ -38,9 +39,9 @@ module.exports.loop = function() {
 		DTask.recache();
 	};
 
-	//// 1. //// Helper functions.
+	//// 1. //// Adis - Automatic Debugging & Isolation System. a.k.a. self-debugger.
 
-	//// 2. //// Adis - Automatic Debugging & Isolation System. a.k.a. self-debugger.
+	//// 2. //// Markets.
 
 	//// 3. //// Colony (priority tasks).
 	global.pulse = COLONY.pulse();
