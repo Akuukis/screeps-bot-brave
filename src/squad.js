@@ -6,6 +6,7 @@ module.exports = function(){ return class Squad {
 		if(opts.name && DTASKS.has(opts.name)){
 			return SQUADS.get(opts.name);
 		}else{
+			if(!opts.type in ['mine', 'upgr']) throw Error('Unknown type: '+opts.type);
 			this.id = opts.id;
 			this.type = opts.type;
 			this.name = opts.name;
@@ -17,10 +18,10 @@ module.exports = function(){ return class Squad {
 			this.pulse = this[this.type+'_pulse'];
 			this.tick = this[this.type+'_tick'];
 
+			this.init();
+
 			if(!Memory.squads[this.name]) Memory.squads[this.name] = {};
 			this.mem = Memory.squads[this.name];
-
-			this.init();
 
 			[
 				'id', 'type', 'name', 'state', 'creeps', 'uniq'
