@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = function(){ return class Squad {
+module.exports = class Squad {
 
 	constructor(opts){
 		if(opts.name && DTASKS.has(opts.name)){
@@ -180,7 +180,7 @@ module.exports = function(){ return class Squad {
 		}
 		mine_pulse(){
 			{  // .perf
-				uniq.perf={
+				this.uniq.perf={
 					theory: {},
 					partice: {},
 					tmp: {},
@@ -397,4 +397,4 @@ module.exports = function(){ return class Squad {
 		upgr_tick(){
 		}
 
-}; };
+};

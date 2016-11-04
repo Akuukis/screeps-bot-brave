@@ -218,7 +218,7 @@ module.exports = function(creeps) {
 					var count = 0;
 					for(var creep in Game.creeps) {if(Memory.creeps[Game.creeps[creep].name].target && Memory.creeps[Game.creeps[creep].name].target == id) {count++;};};
 					if(countMiners<1) {console.log("Create miner:",Game.spawns[i].createCreep([MOVE, WORK], "miner"+getID(), {role: "miner", target: id }));};
-					if(count<source.spots) {console.log("Create miner:",Game.spawns[i].createCreep([MOVE, WORK, WORK], "miner"+getID(), {role: "miner", target: id }));};
+					if(count<Math.max(2,source.spots)) {console.log("Create miner:",Game.spawns[i].createCreep([MOVE, WORK, WORK], "miner"+getID(), {role: "miner", target: id }));};
 				};
 				if(countMiners>1 && countTrans<7 && countTransAll < _.size(Game.spawns)*8) {console.log("Create Trans:",Game.spawns[i].createCreep([MOVE, MOVE, MOVE, CARRY, CARRY, CARRY], "trans"+getID(), {role: "trans", target:false}));};
 				if(countMiners>1 && Memory.rooms[spawn.room.name].contr && countContr<Memory.rooms[spawn.room.name].contr[spawn.room.controller.id].spots.length) {console.log("Create Contr:",Game.spawns[i].createCreep([MOVE, CARRY, WORK, WORK], "contr"+getID(), {role: "contr", target: contr }));};

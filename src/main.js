@@ -12,10 +12,11 @@ global.posify = helper.posify;
 // var adis =require('./adis');
 
 // Classes
-var Colony = require('./colony')();
-var City = require('./city')();
-var Squad = require('./squad')();
-var DTask = require('./dtask')();
+var DTask = require('./dtask');
+var Colony = require('./colony');
+var City = require('./city');
+var Squad = require('./squad');
+// var Market = require('./market')();
 
 // Cache
 global.RECACHE = true;
@@ -53,7 +54,7 @@ module.exports.loop = function() {
 	if(Game.cpu.tickLimit < Game.cpu.bucket){
 		// Just execute all squads.
 		for(let squad of SQUADS.values()) squad.tick();
-		if(pulse) for(let squad of SQUADS.values()) squad.pulse();
+		// if(pulse) for(let squad of SQUADS.values()) squad.pulse();
 	}else{
 		// Execute all squads in prioritized order.
 		let order = new Set('mine','upgr','deff','patr','offn','esco','scot');
