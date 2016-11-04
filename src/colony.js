@@ -16,6 +16,10 @@ module.exports = class Colony {
 		return Memory.pulse==9;
 	}
 
+	irr(){
+		return 1.20;
+	}
+
 	// Make overlay for each unexplored room.
 	overlay(id){
 		var room = Game.rooms[id];

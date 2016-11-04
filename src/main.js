@@ -54,6 +54,7 @@ module.exports.loop = function() {
 
 
 	//// Entity acts: Colony.
+	global.IRR = COLONY.irr();
 	global.pulse = COLONY.pulse();
 	Object.keys(Game.rooms).forEach(function(id){ COLONY.overlay(id); }); // Make overlay for each unexplored room.
 	// Memory.demand.forEach(function(id){ COLONY.distribute(id); }); // Distribute spawning demands to spawns.
@@ -69,10 +70,13 @@ module.exports.loop = function() {
 	//// Entities acts: Squads.
 	if(Game.cpu.tickLimit < Game.cpu.bucket){
 		// Just execute all squads.
+
 		for(let squad of SQUADS.values()) squad.tick();
 		// if(pulse) for(let squad of SQUADS.values()) squad.pulse();
+
 	}else{
 		// Execute all squads in prioritized order.
+
 		let order = new Set('mine','upgr','deff','patr','offn','esco','scot');
 		let subArrays = {};
 		let orderedArray = new Array();
@@ -81,6 +85,7 @@ module.exports.loop = function() {
 		for(let type of order.values()) orderedArray.push.apply(subArrays[type]);
 		orderedArray.forEach( squad=>squad.tick() );
 		if(pulse) orderedArray.forEach( squad=>squad.pulse() );
+
 	};
 
 
