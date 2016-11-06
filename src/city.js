@@ -33,7 +33,7 @@ module.exports = class City {
 	}
 
 	static recache(){
-		Object.keys(Memory[MEM]).forEach( name=>CITIES.set(name, new this(name)) );
+		Object.keys(Memory[MEM]).forEach( name=>Player.cities.set(name, new this(name)) );
 	}
 
 	spawnQueue(){

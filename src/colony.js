@@ -9,11 +9,7 @@ module.exports = class Colony {
 	}
 
 	pulse(){
-		Memory.pulse = (Memory.pulse||1) - 1;
-		if(Memory.pulse<=0){ // Pulse.
-			Memory.pulse = 10;
-		};
-		return Memory.pulse==9;
+		return 0 == Game.time % 16;
 	}
 
 	irr(){

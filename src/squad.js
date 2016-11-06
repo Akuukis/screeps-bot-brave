@@ -7,8 +7,8 @@ var MEM = 'squads';
 module.exports = class Squad {
 
 	constructor(opts){
-		if(opts.name && DTASKS.has(opts.name)){
-			return SQUADS.get(opts.name);
+		if(opts.name && Player.squads.has(opts.name)){
+			return Player.squads.get(opts.name);
 		}else{
 			if(!opts.type in ['mine', 'upgr']) throw Error('Unknown type: '+opts.type);
 			this.id = opts.id;
@@ -31,12 +31,12 @@ module.exports = class Squad {
 				'id', 'type', 'name', 'state', 'creeps', 'uniq'
 			].forEach( key=>Memory[MEM][this.name][key]=this[key] );
 
-			SQUADS.set(this.id, this);
+			Player.squads.set(this.id, this);
 		};
 	}
 
 	static recache(){
-		Object.keys(Memory[MEM]).forEach( name=>SQUADS.set(name, new this(Memory[MEM][name])) );
+		Object.keys(Memory[MEM]).forEach( name=>Player.squads.set(name, new this(Memory[MEM][name])) );
 	}
 
 	// Mine
@@ -292,7 +292,7 @@ module.exports = class Squad {
 			};
 		}
 		mine_tick(){
-			for(var i in [] /*squad.creeps*/){
+			for(let i in [] /*squad.creeps*/){
 				var role = i;
 				var creep = gobi(i);
 				var ram = squad.creeps[i];

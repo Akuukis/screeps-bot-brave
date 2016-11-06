@@ -1,4 +1,5 @@
 "use strict";
+console.log('Reinitiate.')
 
 //// Variables.
 var COLONY_NAME = 'Akuukis Swarm';
@@ -27,10 +28,11 @@ var Squad = require('./squad');
 
 
 //// Global entities.
-global.COLONY = new Colony(COLONY_NAME);
-global.CITIES = new Map();
-global.SQUADS = new Map();
-global.DTASKS = new Map();
+global.Player = {};
+Player.colony = new Colony(COLONY_NAME);
+Player.cities = new Map();
+Player.squads = new Map();
+Player.dtasks = new Map();
 
 
 //// Temporarly.
@@ -54,15 +56,15 @@ module.exports.loop = function() {
 
 
 	//// Entity acts: Colony.
-	global.IRR = COLONY.irr();
-	global.pulse = COLONY.pulse();
-	Object.keys(Game.rooms).forEach(function(id){ COLONY.overlay(id); }); // Make overlay for each unexplored room.
-	// Memory.demand.forEach(function(id){ COLONY.distribute(id); }); // Distribute spawning demands to spawns.
-	COLONY.transits();
+	global.IRR = Player.colony.irr();
+	global.pulse = Player.colony.pulse();
+	Object.keys(Game.rooms).forEach(function(id){ Player.colony.overlay(id); }); // Make overlay for each unexplored room.
+	// Memory.demand.forEach(function(id){ Player.colony.distribute(id); }); // Distribute spawning demands to spawns.
+	Player.colony.transits();
 
 
 	//// Entities acts: Cities.
-	for(let city of CITIES.values()){
+	for(let city of Player.cities.values()){
 		city.spawnQueue();
 	};
 
@@ -71,8 +73,8 @@ module.exports.loop = function() {
 	if(Game.cpu.tickLimit < Game.cpu.bucket){
 		// Just execute all squads.
 
-		for(let squad of SQUADS.values()) squad.tick();
-		// if(pulse) for(let squad of SQUADS.values()) squad.pulse();
+		for(let squad of Player.squads.values()) squad.tick();
+		// if(pulse) for(let squad of Player.squads.values()) squad.pulse();
 
 	}else{
 		// Execute all squads in prioritized order.
@@ -81,7 +83,7 @@ module.exports.loop = function() {
 		let subArrays = {};
 		let orderedArray = new Array();
 		for(let type of order.values()) subArrays[type] = new Array();
-		for(let squad of SQUADS.values()) if(typeof subArrays[squad.type] == 'array') subArrays[squad.type].push(squad);
+		for(let squad of Player.squads.values()) if(typeof subArrays[squad.type] == 'array') subArrays[squad.type].push(squad);
 		for(let type of order.values()) orderedArray.push.apply(subArrays[type]);
 		orderedArray.forEach( squad=>squad.tick() );
 		if(pulse) orderedArray.forEach( squad=>squad.pulse() );
@@ -90,7 +92,7 @@ module.exports.loop = function() {
 
 
 	//// Deferred tasks: anything not urgent and CPU intensive goes here.
-	for(let dTask of DTASKS.values()){
+	for(let dTask of Player.dtasks.values()){
 		if(Game.cpu.getUsed()/Game.tickLimit>0.5) break;
 		dTask.do();
 	}

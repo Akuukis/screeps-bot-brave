@@ -11,27 +11,27 @@ module.exports = class DTask {
 
 	// has to be in form of "functionName(arg1, arg2)~comments here"
 	constructor(opts){
-		if(DTASKS.has(opts.fn)){
-			return DTASKS.get(opts.fn);
+		if(Player.dtasks.has(opts.fn)){
+			return Player.dtasks.get(opts.fn);
 		}else{
 			this.fn = opts.fn;
 			this.comment = opts.comment;
 			Memory[MEM][opts.fn] = this;
-			DTASKS.set(opts.fn, this);
+			Player.dtasks.set(opts.fn, this);
 		};
 	}
 
 	static recache(){
-		Object.keys(Memory[MEM]).forEach( fn  =>DTASKS.set(fn  , new this(Memory[MEM][fn])) );
+		Object.keys(Memory[MEM]).forEach( fn  =>Player.dtasks.set(fn  , new this(Memory[MEM][fn])) );
 	}
 
 	do(){
 		//console.debug(Memory[MEM].fn[0]);
 		var ok = eval('this.'+this.fn);
-		if(ok){
+		// if(ok){
 			delete Memory[MEM][this.fn];
-			DTASKS.delete(this.fn);
-		};
+			Player.dtasks.delete(this.fn);
+		// };
 	}
 
 	overlayThreats(roomName){
