@@ -43,7 +43,7 @@ Problems:
 - concept: prices may be set by historical averages - which ones?
 
 */
-var Market = class Market {
+var Bazaar = class Bazaar {
 
 	constructor(opts){
 		this.name = opts.name;
@@ -53,8 +53,8 @@ var Market = class Market {
 };
 
 module.exports = {
-	energy: new Market({name: 'energy'}),
-	creep: new Market({name: 'creep'}),
-	cpu: new Market({name: 'cpu'}),
-	memory: new Market({name: 'memory'}),
+	energy: new Bazaar({name: 'energy'}),
+	creep: new Bazaar({name: 'creep'}),
+	cpu: new Bazaar({name: 'cpu'}),
+	memory: new Bazaar({name: 'memory'}),
 };

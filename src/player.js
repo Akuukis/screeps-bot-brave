@@ -2,7 +2,7 @@
 
 var DTask = require('./dtask');
 
-module.exports = class Colony {
+module.exports = class Player {
 
 	constructor(name){
 		this.name = name;

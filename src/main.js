@@ -24,7 +24,7 @@ global.CACHE = false;
 
 
 { //// New classes.
-	global.Player = require('./colony');
+	global.Player = require('./player');
 	// global.Bazaar = require('./bazaar');
 	global.Squad = require('./squad');
 	global.DTask = require('./dtask');
