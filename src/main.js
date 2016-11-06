@@ -24,7 +24,7 @@ global.markets = require('./market');
 	let extend = function extend(screepsClass, newMethods){
 		for(let key in newMethods) screepsClass.prototype[key] = newMethods[key];
 	};
-	extend(Room, require('./city'));
+	extend(Room, require('extendRoom'));
 };
 
 
