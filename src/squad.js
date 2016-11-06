@@ -2,13 +2,13 @@
 
 
 var MEM = 'squads';
-
+var map = new Map();
 
 module.exports = class Squad {
 
 	constructor(opts){
-		if(opts.name && Player.squads.has(opts.name)){
-			return Player.squads.get(opts.name);
+		if(opts.name && map.has(opts.name)){
+			return map.get(opts.name);
 		}else{
 			if(!opts.type in ['mine', 'upgr']) throw Error('Unknown type: '+opts.type);
 			this.id = opts.id;
@@ -31,12 +31,13 @@ module.exports = class Squad {
 				'id', 'type', 'name', 'state', 'creeps', 'uniq'
 			].forEach( key=>Memory[MEM][this.name][key]=this[key] );
 
-			Player.squads.set(this.id, this);
+			map.set(this.id, this);
 		};
 	}
 
 	static recache(){
-		Object.keys(Memory[MEM]).forEach( name=>Player.squads.set(name, new this(Memory[MEM][name])) );
+		Object.keys(Memory[MEM]).forEach( name=>map.set(name, new this(Memory[MEM][name])) );
+		return map;
 	}
 
 	// Mine

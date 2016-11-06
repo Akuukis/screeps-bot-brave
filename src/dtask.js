@@ -6,23 +6,25 @@ var MEM = 'deferred';
 
 var Squad = require('./squad');
 
+var map = new Map();
 
 module.exports = class DTask {
 
 	// has to be in form of "functionName(arg1, arg2)~comments here"
 	constructor(opts){
-		if(Player.dtasks.has(opts.fn)){
-			return Player.dtasks.get(opts.fn);
+		if(map.has(opts.fn)){
+			return map.get(opts.fn);
 		}else{
 			this.fn = opts.fn;
 			this.comment = opts.comment;
 			Memory[MEM][opts.fn] = this;
-			Player.dtasks.set(opts.fn, this);
+			map.set(opts.fn, this);
 		};
 	}
 
 	static recache(){
-		Object.keys(Memory[MEM]).forEach( fn  =>Player.dtasks.set(fn  , new this(Memory[MEM][fn])) );
+		Object.keys(Memory[MEM]).forEach( name=>map.set(name, new this(Memory[MEM][name])) );
+		return map;
 	}
 
 	do(){
@@ -30,7 +32,7 @@ module.exports = class DTask {
 		var ok = eval('this.'+this.fn);
 		// if(ok){
 			delete Memory[MEM][this.fn];
-			Player.dtasks.delete(this.fn);
+			map.delete(this.fn);
 		// };
 	}
 
