@@ -71,7 +71,7 @@ module.exports.loop = function() {
 	if(Game.cpu.tickLimit < Game.cpu.bucket){
 		// Just execute all squads.
 
-		for(let squad of Game.squads.values()) squad.tick();
+		// for(let squad of Game.squads.values()) squad.tick();
 		// if(pulse) for(let squad of Game.squads.values()) squad.pulse();
 
 	}else{
@@ -90,7 +90,7 @@ module.exports.loop = function() {
 
 
 	//// Deferred tasks: anything not urgent and CPU intensive goes here.
-	for(let dTask of Game.dtasks.values()){
+	for(let dTask in Game.dtasks){
 		if(Game.cpu.getUsed()/Game.tickLimit>0.5) break;
 		dTask.do();
 	}
