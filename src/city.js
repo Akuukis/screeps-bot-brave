@@ -1,23 +1,18 @@
 "use strict";
 
+module.exports = {
 
-var MEM = 'cities';
-
-
-module.exports = class City {
-
-	constructor(name){
+	init: function init(name){
 		this.name = name;
 
-		var city = Memory[MEM][this.name];
 		var room = Game.rooms[this.name];
 		if(room){ // If visible.
 			// Memory check.
-			if(!city.spawns){
+			if(!room.memory.spawns){
 				var spawnsRaw = room.find(FIND_MY_SPAWNS);
-				city.spawns = {};
+				room.memory.spawns = {};
 				for(var i in spawnsRaw){
-					city.spawns[spawnsRaw[i].name] = {
+					room.memory.spawns[spawnsRaw[i].name] = {
 						queue: {}, // Production, key is time module of 3.
 						stats: {},
 						ready: Math.floor(Game.time/3),
@@ -25,24 +20,19 @@ module.exports = class City {
 					};
 				};
 			};
-			if(!city.ext && city.ext!=0){
+			if(!room.memory.ext && room.memory.ext!=0){
 				var ext = room.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
-				city.ext = ext ? ext.length : 0;
+				room.memory.ext = ext ? ext.length : 0;
 			};
 		};
-	}
+	},
 
-	static recache(){
-		Object.keys(Memory[MEM]).forEach( name=>Player.cities.set(name, new this(name)) );
-	}
-
-	spawnQueue(){
-		var city = Memory[MEM][this.name];
+	spawnQueue: function spawnQueue(){
 		var room = Game.rooms[this.name];
 		if(Math.floor(Game.time/3) == Game.time/3){
-			for(var name in city.spawns){
+			for(var name in room.memory.spawns){
 				var spawn = Game.spawns[name];
-				var ram = city.spawns[name];
+				var ram = room.memory.spawns[name];
 				if(ram.ready<Math.floor(Game.time)){ ram.ready=Math.floor(Game.time) }; //TODO implement such this is obselete.
 				if(ram.next && ram.queue[ram.next] && Memory.supply[ram.queue[ram.next]]){
 					if(ram.next <= (Game.time-Game.time%3)/3){
@@ -77,7 +67,7 @@ module.exports = class City {
 									delete ram.queue[ram.next];
 								};
 							}else if(ok == -1){ // ERR_NOT_OWNER
-								delete city.spawns[name];
+								delete room.memory.spawns[name];
 							}else if(ok == -3 || ok == -4 || ok == -6 ){ // ERR_NAME_EXISTS || ERR_BUSY || ERR_NOT_ENOUGH_ENERGY
 								// Do nothing = Postpone.
 							}else if(ok == -10){ // ERR_INVALID_ARGS - corrupt order, drop it.
@@ -105,6 +95,6 @@ module.exports = class City {
 				// Do spawn stuff.
 			};
 		};
-	}
+	},
 
 };

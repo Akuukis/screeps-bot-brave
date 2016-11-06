@@ -20,17 +20,23 @@ global.markets = require('./market');
 // var adis =require('./adis');
 
 
-//// Classes.
+{  //// Extend existing classes.
+	let extend = function extend(screepsClass, newMethods){
+		for(let key in newMethods) screepsClass.prototype[key] = newMethods[key];
+	};
+	extend(Room, require('./city'));
+};
+
+
+//// New classes.
 var DTask = require('./dtask');
 var Colony = require('./colony');
-var City = require('./city');
 var Squad = require('./squad');
 
 
 //// Global entities.
 global.Player = {};
 Player.colony = new Colony(COLONY_NAME);
-Player.cities = new Map();
 Player.squads = new Map();
 Player.dtasks = new Map();
 
@@ -48,7 +54,6 @@ module.exports.loop = function() {
 	//// 0. //// Global entities: Build from Memory to RAM.
 	helper.checkMemory();
 	if(RECACHE){
-		City.recache();
 		Squad.recache();
 		DTask.recache();
 		//Market.recache();
@@ -63,9 +68,9 @@ module.exports.loop = function() {
 	Player.colony.transits();
 
 
-	//// Entities acts: Cities.
-	for(let city of Player.cities.values()){
-		city.spawnQueue();
+	//// Entities act: Rooms.
+	for(let key in Game.rooms){
+		Game.rooms[key].spawnQueue();
 	};
 
 
