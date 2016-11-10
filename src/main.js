@@ -12,7 +12,7 @@ helper.checkMemory();
 global.getID = helper.getID;
 global.gobi = helper.gobi;
 global.posify = helper.posify;
-global.CACHE = false;
+global.CACHE = undefined;
 
 
 {  //// Extend existing classes.
@@ -43,12 +43,12 @@ module.exports.loop = function() {
 
 	//// 0. //// Global entities: Build from Memory to RAM.
 	helper.checkMemory();
-	if(!global.CACHE){
-		global.CACHE = {};
-		global.CACHE.player = new global.Player(COLONY_NAME);
-		// global.CACHE.bazaar = Bazaar.recache();
-		global.CACHE.squads = Squad.recache();
-		global.CACHE.dtasks = DTask.recache();
+	if(typeof global.CACHE == 'undefined'){
+		global.CACHE = {
+			player: new global.Player(COLONY_NAME),
+			dtasks: DTask.recache(),
+			squads: Squad.recache(),
+		};
 	};
 	for(let key in global.CACHE) Game[key] = global.CACHE[key];
 
@@ -87,7 +87,6 @@ module.exports.loop = function() {
 		if(pulse) orderedArray.forEach( squad=>squad.pulse() );
 
 	};
-
 
 	//// Deferred tasks: anything not urgent and CPU intensive goes here.
 	for(let dTask of Game.dtasks.values()){

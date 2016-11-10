@@ -23,6 +23,7 @@ module.exports = class DTask {
 	}
 
 	static recache(){
+		map = new Map();
 		Object.keys(Memory[MEM]).forEach( name=>map.set(name, new this(Memory[MEM][name])) );
 		return map;
 	}
