@@ -90,8 +90,8 @@ module.exports.loop = function() {
 
 
 	//// Deferred tasks: anything not urgent and CPU intensive goes here.
-	for(let dTask in Game.dtasks){
-		if(Game.cpu.getUsed()/Game.tickLimit>0.5) break;
+	for(let dTask of Game.dtasks.values()){
+		if(Game.cpu.getUsed()/Game.cpu.tickLimit>0.5) break;
 		dTask.do();
 	}
 
