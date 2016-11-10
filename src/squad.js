@@ -8,7 +8,7 @@ var squadTypes = {};
 class Squad {
 	constructor(opts){
 		this.common = {
-			type: type || opts.type,
+			type: opts.type,
 			id: opts.id,
 			name: opts.name || opts.id,
 			state: opts.state || 'Idle',
@@ -31,9 +31,9 @@ squadTypes.mine = class Mine extends Squad {
 
 		// TODO: validation
 
-		opts.type = 'mine';
-		opts.name = this._initName(id)
 		super(opts);
+		opts.type = 'mine';
+		opts.name = this._initName(opts.id)
 
 		this.uniq.source       = this._initSource(opts);
 		this.uniq.lair         = this._initLair(opts);
@@ -46,11 +46,11 @@ squadTypes.mine = class Mine extends Squad {
 
 	_initSource(){
 		return { pos: posify(gobi(id).pos) };
-	};
+	}
 
 	_initName(id){
 		return "mine_"+gobi(id).pos.roomName+"-"+gobi(id).pos.x+"-"+gobi(id).pos.y;
-	};
+	}
 
 	_initLair(){
 		let lair = gobi(id).pos.findInRange(FIND_STRUCTURES, 5, {filter: { structureType: STRUCTURE_KEEPER_LAIR }})[0];
@@ -59,7 +59,7 @@ squadTypes.mine = class Mine extends Squad {
 		}else{
 			return null;
 		};
-	};
+	}
 
 	_initFort(){
 		if(!this.lair) return null;
@@ -82,7 +82,7 @@ squadTypes.mine = class Mine extends Squad {
 			id: structure||null,
 			pos: path[path.length-1-1]
 		};
-	};
+	}
 
 	_initSpots(){
 		let spots = [];
@@ -95,7 +95,7 @@ squadTypes.mine = class Mine extends Squad {
 			};
 		};
 		return spots;
-	};
+	}
 
 	_initTap(){
 		let taps = [];
@@ -133,7 +133,7 @@ squadTypes.mine = class Mine extends Squad {
 		// 	};
 		// 	Memory.taps[squad.tap].distance = distance;
 		// };
-	};
+	}
 
 	_initBuildOptions(){
 		return [
@@ -150,7 +150,7 @@ squadTypes.mine = class Mine extends Squad {
 			{e:8, roles:{ miner:{M:3,W:5}, collector:{M:3,C:11}, slayer:{M:1,A:8} } },
 			{e:9, roles:{ miner:{M:3,W:6}, collector:{M:3,C:12}, slayer:{M:1,A:8} } }
 		];
-	};
+	}
 
 	pulse(){
 		{  // .perf
@@ -295,7 +295,7 @@ squadTypes.mine = class Mine extends Squad {
 				};
 			};
 		};
-	};
+	}
 
 	tick(){
 		for(let i in [] /*squad.creeps*/){
@@ -357,7 +357,7 @@ squadTypes.mine = class Mine extends Squad {
 				// Suicide?
 			};
 		};
-	};
+	}
 }
 
 squadTypes.upgr = class Upgr extends Squad {
@@ -383,13 +383,12 @@ squadTypes.upgr = class Upgr extends Squad {
 }
 
 module.exports = class SquadSelector {
-	constructor(type, opts){
+	constructor(opts){
 
 		if(opts.name && cache.has(opts.name)) return cache.get(opts.name);
+		if(!opts.type in squadTypes) throw Error('Unknown type: '+opts.type);
 
-		if(!type in squadTypes) throw Error('Unknown type: '+opts.type);
-		opts.type = type;
-		var squad = new squadTypes[type](opts);
+		var squad = new squadTypes[opts.type](opts);
 		cache.set(squad.name, squad);
 		return squad;
 	}
