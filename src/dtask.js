@@ -28,7 +28,6 @@ module.exports = class DTask {
 	}
 
 	do(){
-		//console.debug(Memory[MEM].fn[0]);
 		var ok = eval('this.'+this.fn);
 		// if(ok){
 			delete Memory[MEM][this.fn];
@@ -73,7 +72,7 @@ module.exports = class DTask {
 		var room = Game.rooms[roomName];
 		var ram = Memory.rooms[roomName];
 		if(!Memory.rooms[roomName].clean){
-			for(var i in Game.flags){ if(Game.flags[i].room.name==roomName){ Game.flags[i].remove(); }; };
+			for(var i in Game.flags){ if(Game.flags[i].pos.roomName==roomName){ Game.flags[i].remove(); }; };
 			Memory.rooms[roomName].clean = true;
 		};
 		if(!room){ return false; }; // Room not anymore in vision.
