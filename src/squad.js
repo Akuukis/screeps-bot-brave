@@ -5,35 +5,56 @@ var MEM = 'squads';
 var cache = new Map();
 var squadTypes = {};
 
-class Squad {
+var Squad = class Squad {
 	constructor(opts){
+		if(opts.common.type == undefined) throw Error('Undefined type, like real undefined');
+		if(opts.common.type == 'undefined') throw Error('Undefined type, like string "undefined"');
+		if(!opts.common.type in squadTypes) throw Error('Unknown type: '+opts.common.type);
+
 		this.common = {
-			type: opts.type,
-			id: opts.id,
-			name: opts.name || opts.id,
-			state: opts.state || 'Idle',
+			type: opts.common.type,
+			id: opts.common.id,
+			name: opts.common.name || opts.id,
+			state: opts.common.state || 'Idle',
 		};
 
 		this.creeps = opts.creeps || [];
 
 		this.uniq = opts.uniq || {};
 
-		Memory[MEM][this.name] = {
+		Memory[MEM][this.common.name] = {
 			common: this.common,
 			creeps: this.creeps,
 			uniq: this.uniq,
 		};
-	}
+
+		for(let key in this.common) this[key] = this.common[key];
+
+		cache.set(this.common.name, this);
+	};
+};
+
+squadTypes.recache = function recache(){
+	cache = new Map();
+	Object.keys(Memory[MEM]).forEach( name=>cache.set(name, this.recreate(Memory[MEM][name])) );
+	return cache;
+};
+
+squadTypes.recreate = function recreate(opts){
+	return new this[opts.common.type](opts);
 };
 
 squadTypes.mine = class Mine extends Squad {
 	constructor(opts){
+		opts = opts || {common:{},screeps:[],uniq:{}};
+		if(opts.name && cache.has(opts.name)) return cache.get(opts.name);
 
 		// TODO: validation
 
+		opts.common.type = 'mine';
+		var id = opts.common.id;
+		opts.common.name = "mine_"+gobi(id).pos.roomName+"-"+gobi(id).pos.x+"-"+gobi(id).pos.y;
 		super(opts);
-		opts.type = 'mine';
-		opts.name = this._initName(opts.id)
 
 		this.uniq.source       = this._initSource(opts);
 		this.uniq.lair         = this._initLair(opts);
@@ -45,15 +66,11 @@ squadTypes.mine = class Mine extends Squad {
 	}
 
 	_initSource(){
-		return { pos: posify(gobi(id).pos) };
-	}
-
-	_initName(id){
-		return "mine_"+gobi(id).pos.roomName+"-"+gobi(id).pos.x+"-"+gobi(id).pos.y;
+		return { pos: posify(gobi(this.id).pos) };
 	}
 
 	_initLair(){
-		let lair = gobi(id).pos.findInRange(FIND_STRUCTURES, 5, {filter: { structureType: STRUCTURE_KEEPER_LAIR }})[0];
+		let lair = gobi(this.id).pos.findInRange(FIND_STRUCTURES, 5, {filter: { structureType: STRUCTURE_KEEPER_LAIR }})[0];
 		if(lair){
 			return lair;
 		}else{
@@ -89,6 +106,7 @@ squadTypes.mine = class Mine extends Squad {
 		// Search all spots next to source.
 		for(let dx=-1;dx<=1;dx++){
 			for(let dy=-1;dy<=1;dy++){
+				let source = this.uniq.source;
 				spots.push( new RoomPosition(source.pos.x+dx,source.pos.y+dy,source.pos.roomName) );
 				let objs = Game.rooms[source.pos.roomName].lookAt(spots[spots.length-1]);
 				objs.forEach( obj=>{ if(obj.type == 'terrain' && obj.terrain == 'wall'){spots.pop()}; });
@@ -100,10 +118,10 @@ squadTypes.mine = class Mine extends Squad {
 	_initTap(){
 		let taps = [];
 		let highscore = 0;
-		this.spotsPos.forEach( spotPos=>{
-			let tap = {pos: this.spotPos, score: 0};
-			for(let k in this.spotsPos){
-				let dist = tap.pos.findPathTo(spotsPos[k]).length;
+		this.uniq.spots.forEach( spotPos=>{
+			let tap = {pos: spotPos, score: 0};
+			for(let k in this.uniq.spots){
+				let dist = tap.pos.findPathTo(this.uniq.spots[k]).length;
 				if(dist == 1) tap.score++;
 			};
 			taps.push(tap);
@@ -358,15 +376,18 @@ squadTypes.mine = class Mine extends Squad {
 			};
 		};
 	}
-}
+};
 
 squadTypes.upgr = class Upgr extends Squad {
 	constructor(opts){
+		opts = opts || {common:{},screeps:[],uniq:{}};
+		if(opts.name && cache.has(opts.name)) return cache.get(opts.name);
 
 		// TODO: validation
 
+		opts.common.type = 'upgr';
+		opts.common.name = 'upgr_'+gobi(opts.common.id).pos.roomName;
 		super(opts);
-		this.name = this._initName(opts);
 
 		var id = this.id;
 		if(!this.name){
@@ -380,22 +401,6 @@ squadTypes.upgr = class Upgr extends Squad {
 
 	upgr_tick(){
 	}
-}
-
-module.exports = class SquadSelector {
-	constructor(opts){
-
-		if(opts.name && cache.has(opts.name)) return cache.get(opts.name);
-		if(!opts.type in squadTypes) throw Error('Unknown type: '+opts.type);
-
-		var squad = new squadTypes[opts.type](opts);
-		cache.set(squad.name, squad);
-		return squad;
-	}
-
-	static recache(){
-		cache = new Map();
-		Object.keys(Memory[MEM]).forEach( name=>cache.set(name, new this(Memory[MEM][name])) );
-		return cache;
-	}
 };
+
+module.exports = squadTypes;

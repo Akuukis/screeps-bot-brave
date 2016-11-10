@@ -4,7 +4,7 @@
 var MEM = 'deferred';
 
 
-var Squad = require('./squad');
+var squads = require('./squad');
 
 var map = new Map();
 
@@ -102,7 +102,7 @@ module.exports = class DTask {
 			Memory.rooms[roomName].sources = sources;
 		};
 		console.log(JSON.stringify(ram.sources))
-		for(let id in ram.sources) new Squad({id: id, type:'mine'});
+		for(let id in ram.sources) new squads['mine']({common:{id: id}});
 		// Add controller.
 		if(!Memory.rooms[roomName].contr){
 			var contr = Game.rooms[roomName].controller;
@@ -123,7 +123,7 @@ module.exports = class DTask {
 				Memory.rooms[roomName].contr = contrRam;
 			};
 		};
-		for(let id in Memory.rooms[roomName].contr) new Squad({id: id, type:'upgr'});
+		for(let id in Memory.rooms[roomName].contr) new squads['upgr']({common:{id: id}});
 		// Add sources + contr to POIs.
 		if(!Memory.rooms[roomName].pois){
 			Memory.rooms[roomName].pois = [];

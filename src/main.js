@@ -26,7 +26,7 @@ global.CACHE = undefined;
 { //// New classes.
 	global.Player = require('./player');
 	// global.Bazaar = require('./bazaar');
-	global.Squad = require('./squad');
+	global.squads = require('./squad');
 	global.DTask = require('./dtask');
 };
 
@@ -46,8 +46,8 @@ module.exports.loop = function() {
 	if(typeof global.CACHE == 'undefined'){
 		global.CACHE = {
 			player: new global.Player(COLONY_NAME),
-			dtasks: DTask.recache(),
-			squads: Squad.recache(),
+			dtasks: global.DTask.recache(),
+			squads: global.squads.recache(),
 		};
 	};
 	for(let key in global.CACHE) Game[key] = global.CACHE[key];
