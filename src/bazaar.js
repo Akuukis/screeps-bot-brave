@@ -42,19 +42,71 @@ Problems:
 - concept: how to set bid & ask
 - concept: prices may be set by historical averages - which ones?
 
+Rivalrous goods -> bid/ask market
+- energy, creep, cpu, memory, <minerals>
+
+Non-rivalrous goods -> crowdfunding market
+- rcl, security,
+
 */
-var Bazaar = class Bazaar {
 
-	constructor(opts){
-		this.name = opts.name;
-		if(!Memory.markets[this.name]) Memory.markets[this.name] = {};
-	}
+module.exports = class Bazaar {
 
-};
+	constructor(name){
+		this.name = name;
+		if(!Memory.bazaars) Memory.bazaars = {};
+		if(!Memory.bazaars[this.name]){
+			Memory.bazaars[this.name] = {
+				asks: [],
+				bids: [],
+				offers: {},
+			};
+		}else{
+			let bazaar = Memory.bazaars[this.name];
+			for(let key in bazaar) this[key] = bazaar[key];
+		};
+	};
 
-module.exports = {
-	energy: new Bazaar({name: 'energy'}),
-	creep: new Bazaar({name: 'creep'}),
-	cpu: new Bazaar({name: 'cpu'}),
-	memory: new Bazaar({name: 'memory'}),
+	addAsk(offerId, asks){
+		if(!offerId) throw Error('No offerId');
+		if(!asks) throw Error('No asks');
+		if(this.offers[offerId]) this.rmAsk[offerId];
+
+		if(!Array.is(asks)) asks = [asks];
+		asks.forEach(ask=>this.asks.push({
+				offerId: offerId,
+				amount: ask.amount,
+				tick: ask.tick,
+				credits: ask.credits,
+				pos: ask.pos,  // Pick up position
+			}) );
+
+		this.asks.sort((a,b)=>a.amount-b.amount);
+
+		this.offers[offerId] = asks;
+		return offerId;
+	};
+
+	addBid(offerId, bids){
+		if(!offerId) throw Error('No offerId');
+		if(!bids) throw Error('No bids');
+		if(this.offers[offerId]) this.rmAsk[offerId];
+
+		if(!Array.is(bids)) bids = [bids];
+		bids.forEach(bid=>this.bids.push({
+				offerId: offerId,
+				amount: bid.amount,
+				tick: bid.tick,
+				credits: bid.credits,
+				pos: bid.pos,  // Drop off position
+			}) );
+
+		this.bids.sort((a,b)=>a.amount-b.amount);
+
+		this.offers[offerId] = bids;
+		return offerId;
+	};
+
+
+
 };
