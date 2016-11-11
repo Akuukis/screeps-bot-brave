@@ -155,19 +155,12 @@ squadTypes.mine = class Mine extends Squad {
 
 	_initBuildOptions(){
 		return [
-			{e:0, roles:{ miner:false    , collector:false     , slayer:false     } },
-			{e:0, roles:{ miner:{M:1,W:2}, collector:{M:1,C:5 }, slayer:{M:1,A:3} } },
-			{e:0, roles:{ miner:{M:2,W:2}, collector:{M:1,C:5 }, slayer:{M:1,A:3} } },
-			{e:1, roles:{ miner:{M:1,W:3}, collector:{M:2,C:5 }, slayer:{M:1,A:3} } },
-			{e:2, roles:{ miner:{M:2,W:3}, collector:{M:2,C:6 }, slayer:{M:1,A:4} } },
-			{e:3, roles:{ miner:{M:1,W:4}, collector:{M:2,C:7 }, slayer:{M:1,A:5} } },
-			{e:4, roles:{ miner:{M:2,W:4}, collector:{M:2,C:8 }, slayer:{M:1,A:5} } },
-			{e:5, roles:{ miner:{M:1,W:5}, collector:{M:2,C:9 }, slayer:{M:1,A:6} } },
-			{e:6, roles:{ miner:{M:2,W:5}, collector:{M:2,C:10}, slayer:{M:1,A:6} } },
-			{e:7, roles:{ miner:{M:3,W:5}, collector:{M:3,C:10}, slayer:{M:1,A:7} } },
-			{e:8, roles:{ miner:{M:3,W:5}, collector:{M:3,C:11}, slayer:{M:1,A:8} } },
-			{e:9, roles:{ miner:{M:3,W:6}, collector:{M:3,C:12}, slayer:{M:1,A:8} } }
-		];
+			[ {M:1,W:1}, {M:1,W:1}, {M:1,W:1}, {M:1,W:1}, {M:1,W:1} ],
+			[ {M:1,W:2}, {M:1,W:2}, {M:1,W:1} ],
+			[ {M:1,W:3}, {M:1,W:2} ],
+			[ {M:1,W:4}, {M:1,W:1} ],
+			[ {M:1,W:5} ],
+		].map( option=>option.slice(0,this.uniq.spots.length) );
 	}
 
 	pulse(){
