@@ -84,15 +84,15 @@ module.exports = function() {
 		var tail = 16;
 		Memory.CPU = Memory.CPU || [];
 		Memory.CPU[Game.time%tail] = Game.cpu.getUsed(),"of",Game.cpuLimit;
-		if(pulse){
-			var avgCPU = 0;
-			for(var k in Memory.CPU) {avgCPU=avgCPU+Memory.CPU[k]; };
-			avgCPU = Math.round(avgCPU/Memory.CPU.length*100)/100;
-			var stdevCPU = 0;
-			for(var k in Memory.CPU) {stdevCPU=stdevCPU+(Memory.CPU[k]-avgCPU)*(Memory.CPU[k]-avgCPU); };
-			stdevCPU=Math.round(Math.sqrt(stdevCPU)/tail*100)/100;
-			console.log("CPU:",avgCPU,"+/-",stdevCPU);
-		};
+	};
+	function printCPU(){
+		var sum = 0;
+		for(var k in Memory.CPU) sum = sum + Memory.CPU[k];
+		var avg = sum/Memory.CPU.length;
+		sum = 0;
+		for(var k in Memory.CPU) sum = sum + (Memory.CPU[k]-avg)*(Memory.CPU[k]-avg);
+		var stdev = Math.sqrt(sum) / Memory.CPU.length;
+		console.log("CPU:",avg.toFixed(2),"+/-",stdev.toFixed(2));
 	};
 
 	return {
@@ -105,5 +105,6 @@ module.exports = function() {
 		'isThreat': isThreat,
 		'bodify': bodify,
 		'monitorCPU': monitorCPU,
+		'printCPU': printCPU,
 	};
 }();

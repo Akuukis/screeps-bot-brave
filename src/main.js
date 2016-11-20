@@ -45,7 +45,7 @@ module.exports.loop = function() {
 	helper.checkMemory();
 	if(typeof global.CACHE == 'undefined'){
 		global.CACHE = {
-			player: new global.Player(COLONY_NAME),
+			player: new Player(COLONY_NAME),
 			dtasks: global.DTask.recache(),
 			squads: global.squads.recache(),
 			bazaars: {
@@ -60,8 +60,8 @@ module.exports.loop = function() {
 
 
 	//// Entity acts: Colony.
-	global.IRR = Game.player.irr();
-	global.pulse = Game.player.pulse();
+	Memory.irr = Game.player.irr();
+	Memory.pulse = Game.player.pulse();
 	Object.keys(Game.rooms).forEach(function(id){ Game.player.overlay(id); }); // Make overlay for each unexplored room.
 	// Memory.demand.forEach(function(id){ Game.player.distribute(id); }); // Distribute spawning demands to spawns.
 	Game.player.transits();
@@ -107,6 +107,7 @@ module.exports.loop = function() {
 
 	//// Statistics.
 	helper.monitorCPU();
+	if(Game.time%8 == 0) helper.printCPU();
 
 };
 // END. Leave empty line below.
