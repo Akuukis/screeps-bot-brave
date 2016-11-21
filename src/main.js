@@ -31,10 +31,6 @@ global.CACHE = undefined;
 };
 
 
-//// Temporarly.
-global.obselete = require('./obselete');
-
-
 //// Main loop.
 module.exports.loop = function() {
 
@@ -102,7 +98,7 @@ module.exports.loop = function() {
 
 
 	//// Temporarly: code to be removed.
-	obselete.loop();
+	// obselete.loop();
 
 
 	//// Statistics.
