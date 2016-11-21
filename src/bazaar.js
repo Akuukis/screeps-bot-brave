@@ -48,6 +48,9 @@ Rivalrous goods -> bid/ask market
 Non-rivalrous goods -> crowdfunding market
 - rcl, security,
 
+order -> set of exclusive asks or bids
+
+
 */
 
 module.exports = class Bazaar {

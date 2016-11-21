@@ -95,6 +95,16 @@ module.exports = function() {
 		console.log("CPU:",avg.toFixed(2),"+/-",stdev.toFixed(2));
 	};
 
+	function annuity(rent,n,i){
+		i = i || Memory.irr;
+		return rent * ( 1 - Math.pow(1+i,-n) ) / i;
+	};
+
+	function perpetuity(rent,i){
+		i = i || Memory.irr;
+		return rent/i;
+	};
+
 	return {
 		'checkMemory': checkMemory,
 		'gobi': Game.getObjectById,
@@ -106,5 +116,8 @@ module.exports = function() {
 		'bodify': bodify,
 		'monitorCPU': monitorCPU,
 		'printCPU': printCPU,
+		'annuity': annuity,
+		'perpetuity': perpetuity,
+
 	};
 }();

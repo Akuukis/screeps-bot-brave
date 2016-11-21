@@ -13,7 +13,7 @@ module.exports = class Player {
 	}
 
 	irr(){
-		return 1.20;
+		return 1 / 25;
 	}
 
 	// Make overlay for each unexplored room.

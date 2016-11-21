@@ -1,5 +1,7 @@
 "use strict";
 
+var helper = require('./helpers');
+
 var MEM = 'squads';
 
 var cache = new Map();
@@ -155,12 +157,15 @@ squadTypes.mine = class Mine extends Squad {
 
 	_initBuildOptions(){
 		return [
-			[ {M:1,W:1}, {M:1,W:1}, {M:1,W:1}, {M:1,W:1}, {M:1,W:1} ],
+			[ {M:1,W:1}, {M:1,W:1}, {M:1,W:1} ],
+			[ {M:1,W:2}, {M:1,W:1}, {M:1,W:1} ],
 			[ {M:1,W:2}, {M:1,W:2}, {M:1,W:1} ],
+			[ {M:1,W:2}, {M:1,W:2}, {M:1,W:1} ],
+			[ {M:1,W:3}, {M:1,W:1} ],
 			[ {M:1,W:3}, {M:1,W:2} ],
 			[ {M:1,W:4}, {M:1,W:1} ],
 			[ {M:1,W:5} ],
-		].map( option=>option.slice(0,this.uniq.spots.length) );
+		].map( option=>option /*TODO: slice for amount that can stand next to each other*/ );
 	}
 
 	pulse(){
@@ -171,155 +176,52 @@ squadTypes.mine = class Mine extends Squad {
 				tmp: {},
 			};
 		};
-		{  // .wish
-			console.log("squads.mine["+id+"].wish = ...constructing... ");
-			var distance = Memory.taps[squad.tap].distance;
-			var best = {score:false, wish:{}};
-			var scores = [];
-			var eMax = 0;
-			for(var j in Memory.cities){ eMax=Math.max(eMax,Memory.cities[j].ext); };
-			for(var j1 in squad.options){
-				if(squad.options[j1].e > eMax){ break; };
-				//console.log("miner", j1, squad.options[j1]);
-				var miner = squad.options[j1].roles.miner;
-				for(var j2 in squad.options){
-					if(squad.options[j2].e > eMax){ break; };
-					var collector = squad.options[j2].roles.collector;
-					//console.log("collector", j2, squad.options[j2]);
-					for(var j3 in squad.options){
-						if(squad.options[j3].e > eMax){ break; };
-						/*console.log("KUKU",
-							squad.options[j3].roles.miner,
-							squad.uniq.spots.length,
-							squad.uniq.spots.length==2,
-							squad.options[j3].roles.miner && squad.uniq.spots.length==2
-						);*/
-						if(!squad.options[j3].roles.miner && squad.uniq.spots.length==2){ continue; };
-						var miner2 = squad.options[j3].roles.miner;
-						//console.log("\n"+id+" miner2", j3, squad.options[j3]);
-						for(var j4 in squad.options){
-							if(squad.options[j4].e > eMax){ break; }
-							/*console.log("------",
-								typeof squad.options[j4].roles.slayer,
-								typeof squad.uniq.lair,
-								typeof squad.options[j4].roles.slayer == typeof squad.uniq.lair
-							);*/
-							if(!(typeof squad.options[j4].roles.slayer == typeof squad.uniq.lair)){ continue; };
-							var slayer = squad.options[j4].roles.slayer;
-							//console.log("slayer", j4, squad.options[j4]);
-							// Start the decision.
-							var option = [];
-							option.push(miner, collector, miner2, slayer);
-							var mass = {C:0, M:0, W:0, A:0, R:0, H:0, T:0};
-							for(var cr in option){
-								for(var bp in option[cr]){
-									mass[bp] = mass[bp] + option[cr][bp];
-								};
-							};
-							var cost = mass.C*50 + mass.M*50 + mass.W*100 + mass.A*80 + mass.R*150 + mass.H*200 + mass.T*20;
-							var score = {}; // In e/t.
-							score.income = Math.min(10, mass.W*2);
-							score.upkeep = -cost/(30*60-distance);
-							score.taxes = -0; // TODO: Implement income redistribution to scouts & defences.
-							score.penaltyAway = -(Memory.taps[squad.tap].away||0)*0.05;// TODO: insert transportation+escort costs here.
-							if(squad.uniq.lair){
-								var t = 5000/(30*(mass.A||0.3)); // Time to kill Source Keeper. If no A then don't error but be huge.
-								var repairCost = -t*1/(t+300);
-								var disturbCost = -Math.max(0, (Math.min(10,mass.W*2)*t - Math.max(0,mass.W*2-10)*(300-t)) / (t+300) );
-								var droppedCost = -Math.max(0, (score.income-disturbCost)*(squad.uniq.pickFreq||1) - mass.C*50); // TODO
-								score.penaltyUniq = repairCost + disturbCost +droppedCost;
-							}else{
-								score.penaltyUniq = 0;
-							}
-							var total = score.income + score.upkeep + score.taxes + score.penaltyAway + score.penaltyUniq;
-							if(!best || best.score<total){
-								best.score = total;
-								best.perf = score;
-								best.cost = cost;
-								best.creeps = {};
-								if(miner    ){ best.creeps.miner     = miner     };
-								if(miner2   ){ best.creeps.miner2    = miner2    };
-								if(collector){ best.creeps.collector = collector };
-								if(slayer   ){ best.creeps.slayer    = slayer    };
-							};
-							if(!squad.wishlist){ squad.wishlist={}; };
-							//console.log(
-							//	id,""+j1+j2+j3+j4,option.length, cost, distance,
-							//	"-",score.income, score.upkeep, score.taxes, score.penaltyAway, score.penaltyUniq, "=",total,
-							//	"###", mass.A,mass.W
-							//);
-							squad.wishlist[j1+j2+j3+j4] = {total: total, perf: score, screeps: [miner, miner2, collector, slayer] };
-						};
-					};
+
+		{  // Ask
+			var order = [];
+
+			// What would I buy instant?
+			var count = this.creeps.reduce( (sum,creep)=>sum+creep.body.reduce( (s,part)=>part==WORK?s+1:s, 0), 0);
+
+			if(count==0) order.push({M:1,W:5});
+			if(count<=1) order.push({M:1,W:4});
+			if(count<=2) order.push({M:1,W:3});
+			if(count<=3) order.push({M:1,W:2});
+			if(count<=4) order.push({M:1,W:1});
+
+			console.log(count, order)
+
+			// Recalc best squad setup
+			var record = 0;
+			var winner = [];
+			for(let option of this.uniq.buildOptions){
+				let score = 0;
+				for(let screep of option){
+					let rent = screep.W * 2;
+					score += helper.annuity(screep.W * 2, CREEP_LIFE_TIME);
+				};
+				if(score > record){
+					record = score;
+					winner = option;
 				};
 			};
-			if(best.score){
-				squad.perf.theory = best.perf;
-				squad.wish = best;
-			};
-		};
-		if(squad.creeps.length==0 && squad.wish){
-			squad.state="idle";
-			for(var i in squad.wish.creeps){
-				//if(!Memory.demand[id+"-"+i] && (!Memory.supply[id+"-"+i] || !Game.creeps(Memory.supply[id+"-"+i].id)) ){
-				if(!Memory.demand[id+"-"+i] && !Memory.supply[id+"-"+i]){
-					var bp = squad.wish.creeps[i];
-					//console.log("\n");
-					var string = "";
-					//console.log(((bp.C||0)*50+ (bp.M||0)*50+ (bp.W||0)*100+ (bp.A||0)*80+ (bp.R||0)*150+ (bp.H||0)*200+ (bp.T||0)*20));
-					//string="bp "; for(var i in bp){ string=string+i+":"+bp[i]+" "; }; console.log(string);
-					//var body = bodify(bp);
-					var body = [];
-					var translate = {
-						A: ATTACK,
-						C: CARRY,
-						H: HEAL,
-						M: MOVE,
-						R: RANGED_ATTACK,
-						T: TOUGH,
-						W: WORK
-					};
-					for(var b in bp){
-						if(translate[b]){
-							for(var j=0;j<bp[b];j++){ body[body.length]=translate[b]; };
-						};
-					};
-					//console.log(((bp.C||0)*50+ (bp.M||0)*50+ (bp.W||0)*100+ (bp.A||0)*80+ (bp.R||0)*150+ (bp.H||0)*200+ (bp.T||0)*20));
-					//string="bp "; for(var i in bp){ string=string+i+":"+bp[i]+" "; }; console.log(string);
-					//string="body "; for(var i in body){ string=string+i+":"+body[i]+" "; }; console.log(string);
-					var tap = Memory.taps[squad.tap];
-					delete Memory.supply[id+"-"+i];
-					Memory.demand[id+"-"+i] = {
-						name: squad.name+"_"+i,
-						fat: body.length,
-						bp: bp,
-						body: body,
-						cost: ((bp.C||0)*50+ (bp.M||0)*50+ (bp.W||0)*100+ (bp.A||0)*80+ (bp.R||0)*150+ (bp.H||0)*200+ (bp.T||0)*20),
-						fatigue: Math.ceil( (body.length-bp.M)/bp.M ),
-						owner: id,
-						score: squad.wish.score,
-						at: Game.time+60,
-						pos: tap.pos,
-						risky: false,
-						memory: {role: i} // Doublecheck
-					};
-				};
-			};
-		};
+			console.log(record, JSON.stringify(winner))
+
+			// Update orders
+
+		}
 	}
 
 	tick(){
-		for(let i in [] /*squad.creeps*/){
-			var role = i;
+		for(let i of this.creeps){
 			var creep = gobi(i);
-			var ram = squad.creeps[i];
+			var ram = this.creeps[i];
 			routine(creep);
 			if(!creep){
 				// He has died.
 			}else if(ram.role == "miner" || ram.role == "miner2"){
-				if(!ram.pos){
-					if(ram.role=="miner"){ ram.pos=squad.uniq.spots[0]; }else{ ram.pos=squad.uniq.spots[1]; };
-				};
+
+				if(!ram.pos) ram.pos = ram.role=="miner" ? this.uniq.spots[0] : this.uniq.spots[1];
 				if(isThreat(creep)){
 					if(!Memory.lastSafety){
 						// Panic!
@@ -331,39 +233,10 @@ squadTypes.mine = class Mine extends Squad {
 				if(!ram.inPosition){
 					creep.moveTo(ram.pos);
 					if(creep.pos.inRangeTo(ram.pos,0)){ ram.inPosition=true; };
-				};
-				if(ram.inPosition){
+				}else{
 					creep.harvest(gobi(id));
 				};
-			}else if(ram.role == "collector"){
-				wishlist.collector--;
-				if(!ram.inPosition){
-					creep.moveTo(Memory.taps[squad.tap].pos);
-					if(creep.pos.isNearTo(Memory.taps[squad.tap].pos)){ ram.inPosition=true; };
-				};
-				if(ram.inPosition){
-					if(!ram.energies || ram.energies.length==0){
-						ram.energies = [];
-						var all = creep.room.find(FIND_DROPPED_RESOURCES);
-						for(var e in all){ if(creep.pos.inRangeTo(all[e].pos)){ ram.energies.push(all[e]); }; };
-					};
-					if(ram.energies[0]){
-						var err = creep.pickup(ram.energies[0])
-						if(ram.energies[0].energy==0){ ram.energies.shift(); };
-					};
-				};
-			}else if (ram.role == "hunt"){
-				wishlist.hunt--;
-				// Do stuff
-			}else if (ram.role == "medic"){
-				wishlist.medic--;
-				// Do stuff
-			}else if (ram.role == "dummy"){
-				wishlist.medic--;
-				// Do stuff
-			}else if (ram.role == "slayer"){
-				wishlist.medic--;
-				// Do stuff
+
 			}else{
 				// Suicide?
 			};
@@ -389,10 +262,10 @@ squadTypes.upgr = class Upgr extends Squad {
 
 	}
 
-	upgr_pulse(){
+	pulse(){
 	}
 
-	upgr_tick(){
+	tick(){
 	}
 };
 

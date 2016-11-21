@@ -77,8 +77,8 @@ module.exports.loop = function() {
 	if(Game.cpu.tickLimit < Game.cpu.bucket){
 		// Just execute all squads.
 
-		// for(let squad of Game.squads.values()) squad.tick();
-		// if(pulse) for(let squad of Game.squads.values()) squad.pulse();
+		for(let squad of Game.squads.values()) squad.tick();
+		if(Memory.pulse) for(let squad of Game.squads.values()) squad.pulse();
 
 	}else{
 		// Execute all squads in prioritized order.
