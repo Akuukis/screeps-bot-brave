@@ -175,6 +175,7 @@ squadTypes.mine = class Mine extends Squad {
 				})
 
 			// Update orders
+			Game.bazaars.creep.rmOfferId(orderId);
 			for(let i in ticksToLive){
 				for(let j=1; j<=5-countWorkParts[i]; j++){
 					let body = {M:1,W:j};

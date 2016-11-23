@@ -63,14 +63,13 @@ module.exports = class Bazaar {
 		if(!Memory.bazaars) Memory.bazaars = {};
 		if(!Memory.bazaars[this.name]){
 			Memory.bazaars[this.name] = {
-				asks: [],
-				bids: [],
-				offers: {},
+				offers: [],
 			};
-		}else{
-			let bazaar = Memory.bazaars[this.name];
-			for(let key in bazaar) this[key] = bazaar[key];
 		};
+	};
+
+	rmOfferId(id){
+		Memory.bazaars[this.name].offers = Memory.bazaars[this.name].offers.filter(offer=>offer.id!=id);
 	};
 
 	addOffer(offer){
@@ -81,7 +80,8 @@ module.exports = class Bazaar {
 		assert(offer.credits, 'Offer does not have credits, it is '+offer.credits);
 		assert(offer.amount,  'Offer does not have amount.');
 		assert(offer.details, 'Offer does not have details.');
-		console.log(JSON.stringify(offer))
+		console.log(JSON.stringify(offer));
+		Memory.bazaars[this.name].offers.push(offer);
 	};
 
 };
