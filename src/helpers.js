@@ -109,6 +109,38 @@ module.exports = function() {
 		if(!assertion) throw Error(msg);
 	};
 
+	function bodyCost(body){
+		var sum = 0;
+		for(let key in body){
+			if(key=='move' || key=='M'){
+				sum += body[key] * BODYPART_COST.move;
+			}else if(key=='work' || key=='W'){
+				sum += body[key] * BODYPART_COST.work;
+			}else if(key=='attack' || key=='A'){
+				sum += body[key] * BODYPART_COST.attack;
+			}else if(key=='carry' || key=='C'){
+				sum += body[key] * BODYPART_COST.carry;
+			}else if(key=='heal' || key=='H'){
+				sum += body[key] * BODYPART_COST.heal;
+			}else if(key=='ranged' || key=='R'){
+				sum += body[key] * BODYPART_COST.ranged_attack;
+			}else if(key=='tough' || key=='T'){
+				sum += body[key] * BODYPART_COST.tough;
+			}else if(key=='claim' || key=='L'){
+				sum += body[key] * BODYPART_COST.claim;
+			}else{
+				throw Error('Unknown body part: '+key);
+			};
+		};
+		return sum;
+	};
+
+	function bodyDuration(body){
+		var sum = 0;
+		for(let key in body) sum += body[key] * CREEP_SPAWN_TIME;
+		return sum;
+	};
+
 	return {
 		'checkMemory': checkMemory,
 		'gobi': Game.getObjectById,
@@ -123,5 +155,7 @@ module.exports = function() {
 		'annuity': annuity,
 		'perpetuity': perpetuity,
 		'assert': assert,
+		'bodyCost': bodyCost,
+		'bodyDuration': bodyDuration,
 	};
 }();

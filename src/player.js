@@ -9,11 +9,11 @@ module.exports = class Player {
 	}
 
 	pulse(){
-		return 0 == Game.time % 16;
+		return 0 == Game.time % 25;
 	}
 
 	irr(){
-		return 1 / 25;
+		return 0.25 / 25;
 	}
 
 	// Make overlay for each unexplored room.

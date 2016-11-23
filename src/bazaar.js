@@ -73,54 +73,14 @@ module.exports = class Bazaar {
 		};
 	};
 
-	_addAsk(offerId, asks){
-		if(!offerId) throw Error('No offerId');
-		if(!asks) throw Error('No asks');
-		if(this.offers[offerId]) this.rmAsk[offerId];
-
-		if(!Array.is(asks)) asks = [asks];
-		asks.forEach(ask=>this.asks.push({
-				offerId: offerId,
-				amount: ask.amount,
-				tick: ask.tick,
-				credits: ask.credits,
-				pos: ask.pos,  // Pick up position
-			}) );
-
-		this.asks.sort((a,b)=>a.amount-b.amount);
-
-		this.offers[offerId] = asks;
-		return offerId;
-	};
-
-	_addBid(offerId, bids){
-		if(!offerId) throw Error('No offerId');
-		if(!bids) throw Error('No bids');
-		if(this.offers[offerId]) this.rmAsk[offerId];
-
-		if(!Array.is(bids)) bids = [bids];
-		bids.forEach(bid=>this.bids.push({
-				offerId: offerId,
-				amount: bid.amount,
-				tick: bid.tick,
-				credits: bid.credits,
-				pos: bid.pos,  // Drop off position
-			}) );
-
-		this.bids.sort((a,b)=>a.amount-b.amount);
-
-		this.offers[offerId] = bids;
-		return offerId;
-	};
-
 	addOffer(offer){
 		assert(typeof offer == 'object', 'Offer is not an object, but '+typeof offer);
 		assert(offer.id,      'Offer does not have id.');
+		assert(offer.owner,   'Offer does not have owner.');
 		assert(offer.time,    'Offer does not have time.');
 		assert(offer.credits, 'Offer does not have credits, it is '+offer.credits);
 		assert(offer.amount,  'Offer does not have amount.');
 		assert(offer.details, 'Offer does not have details.');
-		assert(offer.pos,     'Offer does not have pos.');
 		console.log(JSON.stringify(offer))
 	};
 

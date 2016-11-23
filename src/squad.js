@@ -176,14 +176,20 @@ squadTypes.mine = class Mine extends Squad {
 
 			// Update orders
 			for(let i in ticksToLive){
-				for(let j=5-countWorkParts[i]; j>0; j--){
+				for(let j=1; j<=5-countWorkParts[i]; j++){
+					let body = {M:1,W:j};
 					Game.bazaars.creep.addOffer({
 							'id': orderId,
+							'owner': this.common.id,
 							'time': Game.time+ticksToLive[i],
-							'credits': helper.annuity(j * 2, CREEP_LIFE_TIME),
-							'amount': 1,
-							'details': {M:1,W:j},
-							'pos': self.uniq.tap,
+							'credits': helper.annuity(j*HARVEST_POWER, CREEP_LIFE_TIME),
+							'amount': helper.bodyCost(body),
+							'details': {
+								'costTick': j*HARVEST_POWER,
+								'body': body,
+								'duration': helper.bodyDuration(body),
+								'pos': self.uniq.tap,
+							},
 						});
 				};
 			};
