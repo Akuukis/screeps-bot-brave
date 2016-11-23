@@ -1,5 +1,8 @@
 "use strict";
 
+var helper = require('./helpers');
+var assert = helper.assert;
+
 /* Entities
 
 $ is value measurement
@@ -70,7 +73,7 @@ module.exports = class Bazaar {
 		};
 	};
 
-	addAsk(offerId, asks){
+	_addAsk(offerId, asks){
 		if(!offerId) throw Error('No offerId');
 		if(!asks) throw Error('No asks');
 		if(this.offers[offerId]) this.rmAsk[offerId];
@@ -90,7 +93,7 @@ module.exports = class Bazaar {
 		return offerId;
 	};
 
-	addBid(offerId, bids){
+	_addBid(offerId, bids){
 		if(!offerId) throw Error('No offerId');
 		if(!bids) throw Error('No bids');
 		if(this.offers[offerId]) this.rmAsk[offerId];
@@ -110,6 +113,15 @@ module.exports = class Bazaar {
 		return offerId;
 	};
 
-
+	addOffer(offer){
+		assert(typeof offer == 'object', 'Offer is not an object, but '+typeof offer);
+		assert(offer.id,      'Offer does not have id.');
+		assert(offer.time,    'Offer does not have time.');
+		assert(offer.credits, 'Offer does not have credits, it is '+offer.credits);
+		assert(offer.amount,  'Offer does not have amount.');
+		assert(offer.details, 'Offer does not have details.');
+		assert(offer.pos,     'Offer does not have pos.');
+		console.log(JSON.stringify(offer))
+	};
 
 };

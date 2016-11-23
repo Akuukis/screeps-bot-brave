@@ -63,8 +63,6 @@ squadTypes.mine = class Mine extends Squad {
 		this.uniq.fort         = this._initFort(opts);
 		this.uniq.spots        = this._initSpots(opts);
 		this.uniq.tap          = this._initTap(opts);
-		this.uniq.buildOptions = this._initBuildOptions(opts);
-
 	}
 
 	_initSource(){
@@ -155,20 +153,8 @@ squadTypes.mine = class Mine extends Squad {
 		// };
 	}
 
-	_initBuildOptions(){
-		return [
-			[ {M:1,W:1}, {M:1,W:1}, {M:1,W:1} ],
-			[ {M:1,W:2}, {M:1,W:1}, {M:1,W:1} ],
-			[ {M:1,W:2}, {M:1,W:2}, {M:1,W:1} ],
-			[ {M:1,W:2}, {M:1,W:2}, {M:1,W:1} ],
-			[ {M:1,W:3}, {M:1,W:1} ],
-			[ {M:1,W:3}, {M:1,W:2} ],
-			[ {M:1,W:4}, {M:1,W:1} ],
-			[ {M:1,W:5} ],
-		].map( option=>option /*TODO: slice for amount that can stand next to each other*/ );
-	}
-
 	pulse(){
+		var self = this;
 		{  // .perf
 			this.uniq.perf={
 				theory: {},
@@ -178,38 +164,30 @@ squadTypes.mine = class Mine extends Squad {
 		};
 
 		{  // Ask
-			var order = [];
+			var orderId = this.common.id+'_creeps';
 
-			// What would I buy instant?
-			var count = this.creeps.reduce( (sum,creep)=>sum+creep.body.reduce( (s,part)=>part==WORK?s+1:s, 0), 0);
-
-			if(count==0) order.push({M:1,W:5});
-			if(count<=1) order.push({M:1,W:4});
-			if(count<=2) order.push({M:1,W:3});
-			if(count<=3) order.push({M:1,W:2});
-			if(count<=4) order.push({M:1,W:1});
-
-			console.log(count, order)
-
-			// Recalc best squad setup
-			var record = 0;
-			var winner = [];
-			for(let option of this.uniq.buildOptions){
-				let score = 0;
-				for(let screep of option){
-					let rent = screep.W * 2;
-					score += helper.annuity(screep.W * 2, CREEP_LIFE_TIME);
-				};
-				if(score > record){
-					record = score;
-					winner = option;
-				};
-			};
-			console.log(record, JSON.stringify(winner))
+			// What would I buy instant or later?
+			var ticksToLive = this.creeps.reduce( (array,creep)=>array.push(creep.ticksToLive), [0] )
+			var countWorkParts = ticksToLive.map(t=>{
+					return self.creeps.reduce( (sum,creep)=>{
+							return sum + (creep.ticksToLive>t ? creep.body.reduce( (s,part)=>part==WORK?s+1:s, 0) : 0 )
+						}, 0);
+				})
 
 			// Update orders
-
-		}
+			for(let i in ticksToLive){
+				for(let j=5-countWorkParts[i]; j>0; j--){
+					Game.bazaars.creep.addOffer({
+							'id': orderId,
+							'time': Game.time+ticksToLive[i],
+							'credits': helper.annuity(j * 2, CREEP_LIFE_TIME),
+							'amount': 1,
+							'details': {M:1,W:j},
+							'pos': self.uniq.tap,
+						});
+				};
+			};
+		};
 	}
 
 	tick(){

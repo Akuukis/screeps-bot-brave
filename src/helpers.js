@@ -105,6 +105,10 @@ module.exports = function() {
 		return rent/i;
 	};
 
+	function assert(assertion, msg){
+		if(!assertion) throw Error(msg);
+	};
+
 	return {
 		'checkMemory': checkMemory,
 		'gobi': Game.getObjectById,
@@ -118,6 +122,6 @@ module.exports = function() {
 		'printCPU': printCPU,
 		'annuity': annuity,
 		'perpetuity': perpetuity,
-
+		'assert': assert,
 	};
 }();
