@@ -2,7 +2,28 @@
 
 module.exports = {
 
-	init: function init(name){
+	init: function init(){
+
+		// Memory check.
+		if(!this.memory.spawns){
+			this.memory.spawns = {};
+			let spawnsRaw = this.find(FIND_MY_SPAWNS);
+			for(let spawnRaw of spawnsRaw){
+				this.memory.spawns[spawnRaw.name] = {
+					queue: {}, // Production, key is time module of 3.
+					stats: {},
+					ready: Math.floor(Game.time/3),
+					next: Math.floor((Game.time-1800)/3)
+				};
+			};
+		};
+		if(!this.memory.ext && this.memory.ext!=0){
+			let ext = this.find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_EXTENSION}});
+			this.memory.ext = ext ? ext.length : 0;
+		};
+	},
+
+	reconstruct: function reconstruct(){
 		this.name = name;
 
 		var room = Game.rooms[this.name];

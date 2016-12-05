@@ -25,7 +25,7 @@ global.CACHE = undefined;
 
 { //// New classes.
 	global.Player = require('./player');
-	global.Bazaar = require('./bazaar');
+	global.economy = require('./economy');
 	global.squad = require('./squad');
 	global.DTask = require('./dtask');
 };
@@ -45,10 +45,8 @@ module.exports.loop = function() {
 			dtasks: global.DTask.recache(),
 			squads: global.squad.recache(),
 			bazaars: {
-				energy: new Bazaar('energy'),
-				creep: new Bazaar('creep'),
-				cpu: new Bazaar('cpu'),
-				memory: new Bazaar('memory'),
+				energy: economy.energyBazaar,
+				creep: economy.creepBazaar,
 			},
 		};
 	};
@@ -60,12 +58,12 @@ module.exports.loop = function() {
 	Memory.pulse = Game.player.pulse();
 	Object.keys(Game.rooms).forEach(function(id){ Game.player.overlay(id); }); // Make overlay for each unexplored room.
 	// Memory.demand.forEach(function(id){ Game.player.distribute(id); }); // Distribute spawning demands to spawns.
-	Game.player.transits();
+	Game.player.escrows();
 
 
 	//// Entities act: Rooms.
-	for(let key in Game.rooms){
-		Game.rooms[key].spawnQueue();
+	for(let name in Game.rooms){
+		Game.rooms[name].init();
 	};
 
 
@@ -89,6 +87,7 @@ module.exports.loop = function() {
 		if(pulse) orderedArray.forEach( squad=>squad.pulse() );
 
 	};
+
 
 	//// Deferred tasks: anything not urgent and CPU intensive goes here.
 	for(let dTask of Game.dtasks.values()){

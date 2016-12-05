@@ -107,15 +107,43 @@ Example #2 (20 ticks later, when [MOVE,WORK,WORK] miner has been delivered):
 
 */
 
-module.exports.Agent = class Agent {
+if(!Memory.agents) Memory.agents = {};
+var Agent = class Agent {
 
-}
+	constructor(name){
+		if(!name) throw Error('No name.');
+		this.name = name;
+		if(!Memory.agents[this.name]){
+			Memory.agents[this.name] = {
+				credits: 0,
+				orders: [],
+				obligations: [],
+			};
+		};
+	};
 
-module.exports.Bazaar = class Bazaar {
+	// getters & setters
+	credits(diff){
+		if(diff) Memory.agents[this.name].credits += diff;
+		return Memory.agents[this.name].credits;
+	};
+
+	orders(newOffer){
+		if(newOffer) Memory.agents[this.name].orders.push(newOffer);
+		return Memory.agents[this.name].orders;
+	};
+
+	obligations(newOffer){
+		if(newOffer) Memory.agents[this.name].obligations.push(newOffer);
+		return Memory.agents[this.name].obligations;
+	};
+
+};
+
+var Bazaar = class Bazaar {
 
 	constructor(name){
 		this.name = name;
-		if(!Memory.bazaars) Memory.bazaars = {};
 		if(!Memory.bazaars[this.name]){
 			Memory.bazaars[this.name] = {
 				offers: [],
@@ -144,3 +172,16 @@ module.exports.Bazaar = class Bazaar {
 	};
 
 };
+
+if(!Memory.energyBazaar) Memory.energyBazaar = {};
+var energyBazaar = new Bazaar('energy');
+
+if(!Memory.creepBazaar) Memory.creepBazaar = {};
+var creepBazaar = new Bazaar('creep');
+
+
+
+
+module.exports.energyBazaar = energyBazaar;
+module.exports.creepBazaar = creepBazaar;
+module.exports.Agent = Agent;

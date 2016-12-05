@@ -1,18 +1,20 @@
 "use strict";
 
 var helper = require('./helpers');
+var Agent = require('./economy').Agent;
 
 var MEM = 'squads';
 
 var cache = new Map();
 var squadTypes = {};
 
-var Squad = class Squad {
+var Squad = class Squad extends Agent {
 	constructor(opts){
 		if(opts.common.type == undefined) throw Error('Undefined type, like real undefined');
 		if(opts.common.type == 'undefined') throw Error('Undefined type, like string "undefined"');
 		if(!opts.common.type in squadTypes) throw Error('Unknown type: '+opts.common.type);
 
+		super(opts.common.id);
 		this.common = {
 			type: opts.common.type,
 			id: opts.common.id,
