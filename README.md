@@ -51,7 +51,7 @@ Currently I am only putting down to text and testing all ideas. Code mismatch wi
 	- To try out new code in 3 seconds, you can add alias in `~/.bash_profile` file
 
 	```bash
-	alias gitfix='git commit --all --amend --no-edit; git push -f'`.
+	alias gitfix='git commit --all --amend --no-edit; git push -f'
 	```
 
 6. Pull request to any of `feature-*` branches, to `develop`, or to next `release-*` branch
