@@ -9,10 +9,6 @@ $ is value measurement
 $ value is fixed to 1 energy at required Drop-off-Point
 $ sums to zero
 
-Agent is Colony, City or Squad
-Every agent has $
-
-
 Market is manual bid and ask market in currency $
 Types of market: energy, creep, cpu, memory, rcl, security, <list of resources>
 Logistics is special agent that executes trades and determines bought, sold and cut values

@@ -63,6 +63,87 @@ Currently I am only putting down to text and testing all ideas. Code mismatch wi
 
 ##                                  Concepts
 
+### Modularity
+
+Code consists of multiple modules that communicate to each other directly via object methods (according to globally defined API) and indirectly via Memory (according to global data model). Internal logic of module can be interchanged without global problems, thus multiple alternative modules are supported and encouraged. When modules are hierarchical, the parent also tracks and measures performance of childs. If child behaves badly then parent may decide to change its logic to alternative module. Every module with "Squad" in it actually may control a creep, others don't. First and second level or hierarchy are "virtual" in a sense that they directly interact only with other modules and memory. The list of modules are as follows:
+- Main
+- Economy
+- Utilities
+- ADIS
+- Player
+	- Diplomat
+		- Ambassador (per player)
+			- Squad:Consul (per task)
+	- Marshal
+		- Major (per war)
+			- Squad:Captain (per task)
+	- Executive
+		- Squad:Escrow
+		- Governor (per Room)
+			- Squad:Miner (per source)
+			- Squad:Militia (per gate)
+			- Squad:Extractor
+			- Squad:Police
+			- Squad:Builder
+			- Squad:Logistics
+			- Spawner
+			- Storage
+
+#### Main
+
+Scans folder fr modules and requires them, caches objects or rebuids from memory, and executes modules.
+
+#### Economy
+
+Provides `Agent` class and `bazaar*` objects. `Agent` is class from which every economic player inherits that handles all transactions, accounting and metrics. `bazaar*` are objects that represent various internal markets for energy, creeps, etc. Everyone that inherits from `Agent` interacts with each other through one or more `bazaar*`.
+
+#### Utilities
+
+Miscellaneous stuff used globally, for example logger.
+
+#### ADIS
+
+The *Automatic Debugging & Isolation System* is used globally. It contains various routines that's main goal is to prevent coma as gracefully as possible.
+
+#### Player
+
+It is you! It also is an `Agent`.
+- owns: *GCL*, *Memory*
+- produces: *CPU*
+- rents: nothing
+- wants: *control points*
+
+#### Diplomat & Ambassador
+
+They deal with allies, manual trade, communication and other diplomatic stuff. To be developed a lot later.
+
+#### Marshal & Major
+
+They deal with offence. To be developed a lot later.
+
+#### Bureaucrat
+
+
+##                                  API
+
+###
+
+
+##                                  Memory Data model
+
+###
+
+
+#### Economy
+
+
+#### Agents
+
+Agent is an entity that participates in economy.
+
+
+
+
 #### Entities
 
 1. Real entities are provied by API but only if visible.
