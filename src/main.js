@@ -1,5 +1,16 @@
 "use strict";
 
+var helper = require('./helpers');
+global.getID = helper.getID;
+global.gobi = helper.gobi;
+global.posify = helper.posify;
+
+var colony = require('./colony');
+var city = require('./city');
+var squad = require('./squad');
+var dtask = require('./dtask');
+var obselete = require('./obselete');
+
 module.exports.loop = function() {
 
 	// return;
@@ -8,27 +19,20 @@ module.exports.loop = function() {
 
 	//// 1. //// Helper functions.
 	// var _ = require('lodash');
-	var helper =require('./helpers');
 	helper.checkMemory();
-	global.getID = helper.getID;
-	global.gobi = helper.gobi;
-	global.posify = helper.posify;
 	//// 2. //// Adis - Automatic Debugging & Isolation System. a.k.a. self-debugger.
 	// var adis =require('./adis');
 
 	//// 3. //// Colony (priority tasks).
-	var colony = require('./colony');
 	global.pulse = colony.pulse();
 
 	//// 4. //// (each) City (priority tasks).
-	var city = require('./city');
 	Object.keys(Memory.cities).forEach(function(name){
 		city.memoryCheck(name);
 		city.spawnQueue(name);
 	});
 
 	//// 5. //// (each) Squad tasks in order.
-	var squad = require('./squad');
 	Object.keys(Memory.squads.mine).forEach(function(id){ squad.doMine(id); });
 	Object.keys(Memory.squads.upgr).forEach(function(id){ squad.doUpgr(id); });
 	Object.keys(Memory.squads.deff).forEach(function(id){ squad.doDeff(id); });
@@ -46,7 +50,6 @@ module.exports.loop = function() {
 	colony.transits();
 
 	//// 8. //// Deferred tasks. Anything not urgent and CPU intensive goes here.
-	var dtask = require('dtask');
 	dtask.checkMemory();
 
 	while(Game.cpuLimit>400 && Game.cpu.getUsed()/Game.cpuLimit<0.8 && Memory.deffered.fn.length>0){ // TODO const.
@@ -54,7 +57,6 @@ module.exports.loop = function() {
 	}
 
 	//// Old code to be removed.
-	var obselete = require('obselete');
 	obselete.loop();
 
 	//// 9. //// statistics.
