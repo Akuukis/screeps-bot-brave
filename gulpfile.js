@@ -3,9 +3,9 @@ const gulpScreeps = require('gulp-screeps');
 const eslint = require('gulp-eslint');
 
 const credentials = require('./credentials.js');
-const SRC = 'src/**/*.js';
-const BUILD = 'build/';
-const LIB = 'lib/';
+const SRC = './src/**/*.js';
+const BUILD = './build/';
+const LIB = './lib/';
 
 gulp.task('lint', _=>
   gulp.src(SRC)
@@ -24,7 +24,7 @@ gulp.task('test', function() {
 });
 
 gulp.task('commit', _=>
-  gulp.src(BUILD)
+  gulp.src(BUILD+'*.js')
     .pipe(gulpScreeps(credentials))
 );
 
