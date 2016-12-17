@@ -7,9 +7,9 @@
   "contributors": [],
   "scripts": {
     "test": "gulp test",
-    "deploy": "gulp deploy"
+    "commit": "gulp commit"
   },
-  "main": "dist/main.js",
+  "main": "build/main.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/Akuukis/screeps"

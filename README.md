@@ -186,11 +186,3 @@ Every room has a Governor. Governors plan structure layout, caches "paths", trad
 ### API & Memory Data Model
 
 There is API and Memory data Model for each pair up & down the hierarchy, e.g. Executive to Governor. Also, globally API is present from each Agent to modules `economy`, `utilities` and `adis`.
-
-##                                  Folders
-
-- `.`: supplementary stuff
-- `./src`: our code
-- `./doc`: documentation for our code
-- `./lib`: other repo code
-- `./dist`: push-able code to screeps server, ignored folder.
