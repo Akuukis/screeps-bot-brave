@@ -1,0 +1,6 @@
+[submodule "lib/ScreepsAutocomplete"]
+	path = lib/ScreepsAutocomplete
+	url = https://github.com/Garethp/ScreepsAutocomplete.git
+[submodule "lib/screeps-profiler"]
+	path = lib/screeps-profiler
+	url = https://github.com/gdborton/screeps-profiler.git
