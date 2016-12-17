@@ -6,6 +6,8 @@ At this moment all ideas ar work in progress and master contains quickfix-style 
 
 ##                                 Vision
 
+Create **BraveBot** that in cooperation with its kind will unite the server into a brave new world. Community! Identity! Stability!
+
 - **Is fun to own and watch.** It reports what it does so user can be aware of otherwise invisible decisions and actions. Users can modify few memory variables to turn on/off whatever he want to focus on.
 - **Is conceptually effective.** It runs on ideas like decentralization, self-reflection, demand-supply market and more to come.
 - **Is social.** It allies with other colonies that has the same script, cooperates with them economically and make joint military campaigns.
@@ -181,6 +183,14 @@ Also Executive polls governor opinions about other rooms for their income potent
 Every room has a Governor. Governors plan structure layout, caches "paths", trade, supply other governors.
 
 
-###                                 API & Memory Data Model
+### API & Memory Data Model
 
 There is API and Memory data Model for each pair up & down the hierarchy, e.g. Executive to Governor. Also, globally API is present from each Agent to modules `economy`, `utilities` and `adis`.
+
+##                                  Folders
+
+- `.`: supplementary stuff
+- `./src`: our code
+- `./doc`: documentation for our code
+- `./lib`: other repo code
+- `./dist`: push-able code to screeps server, ignored folder.
