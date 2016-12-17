@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"syntax_override": {
+		"\\.js$": ["JavaScript", "JavaScript"],
+		"\\.md$": ["Markdown Extended", "Syntaxes", "Markdown Extended"],
+	},
+	"settings":{
+		"rulers": [120, 150],
+		"translate_tabs_to_spaces": true,
+		"tab_size": 2
+	}
+}
