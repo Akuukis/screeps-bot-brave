@@ -61,9 +61,9 @@ Example #1:
 - Spawn has been just placed. As it has 300 energy, it places wildcard creep ask offer at [0; 300] energy with time bounds [today; infinity] at assumed starting price 1 credit per 1 energy.
 - Escrow recognizes that these offers can be matched and reserves both of them, spawn offer instantly and miner offer later. At the point of reservation, both miner and spawn places next offers. Then escrow in the same tick executes spawn offer and pays to it credits (while borrowing itself from player). When creep is ready, it is delivered to miner squad tap. Soon later miner offer is executed, when ownership of creep is transferred, miner borrows from player to pay escrow and escrow repays player amount borrowed plus aggregated interest.
 - In the end, spawn is positive, escrow is neutral and miner is negative on credit balance.
-	        Spawn	Escrow	Miner	Player
-	credits	+		0		0		-
-	value	+		0		--		+
+          Spawn Escrow  Miner Player
+  credits +   0   0   -
+  value +   0   --    +
 
 Example #1:
 - Miner squad has just been created. Based on current IRR and assumption, that 1 energy == 1 credit, it evaluates various miner creeps by discounting it future energy yields and puts up creep bid offers at that price with time bounds [today; infinity].
@@ -84,10 +84,10 @@ Example #1:
     - miner takes over creep
     - escrow repays player principal + interest
 - In the end
-	        Player	Spawn	Escrow	Miner
-	credits	-		+		0		0
-	balance	+		+		0		--
-	AV		0		+		+		+
+          Player  Spawn Escrow  Miner
+  credits -   +   0   0
+  balance +   +   0   --
+  AV    0   +   +   +
 
 Example #2 (20 ticks later, when [MOVE,WORK,WORK] miner has been delivered):
 - Miner squad has started operating
@@ -106,66 +106,66 @@ Example #2 (20 ticks later, when [MOVE,WORK,WORK] miner has been delivered):
 if(!Memory.agents) Memory.agents = {};
 var Agent = class Agent {
 
-	constructor(name){
-		if(!name) throw Error('No name.');
-		this.name = name;
-		if(!Memory.agents[this.name]){
-			Memory.agents[this.name] = {
-				credits: 0,
-				orders: [],
-				obligations: [],
-			};
-		};
-	};
+  constructor(name){
+    if(!name) throw Error('No name.');
+    this.name = name;
+    if(!Memory.agents[this.name]){
+      Memory.agents[this.name] = {
+        credits: 0,
+        orders: [],
+        obligations: [],
+      };
+    };
+  };
 
-	// getters & setters
-	credits(diff){
-		if(diff) Memory.agents[this.name].credits += diff;
-		return Memory.agents[this.name].credits;
-	};
+  // getters & setters
+  credits(diff){
+    if(diff) Memory.agents[this.name].credits += diff;
+    return Memory.agents[this.name].credits;
+  };
 
-	orders(newOffer){
-		if(newOffer) Memory.agents[this.name].orders.push(newOffer);
-		return Memory.agents[this.name].orders;
-	};
+  orders(newOffer){
+    if(newOffer) Memory.agents[this.name].orders.push(newOffer);
+    return Memory.agents[this.name].orders;
+  };
 
-	obligations(newOffer){
-		if(newOffer) Memory.agents[this.name].obligations.push(newOffer);
-		return Memory.agents[this.name].obligations;
-	};
+  obligations(newOffer){
+    if(newOffer) Memory.agents[this.name].obligations.push(newOffer);
+    return Memory.agents[this.name].obligations;
+  };
 
 };
 
 var Bazaar = class Bazaar {
 
-	constructor(name){
-		this.name = name;
-		if(!Memory.bazaars[this.name]){
-			Memory.bazaars[this.name] = {
-				offers: [],
-			};
-		};
-	};
+  constructor(name){
+    this.name = name;
+    if(!Memory.bazaars[this.name]){
+      Memory.bazaars[this.name] = {
+        offers: [],
+      };
+    };
+  };
 
-	rmOfferId(id){
-		Memory.bazaars[this.name].offers = Memory.bazaars[this.name].offers.filter(offer=>offer.id!=id);
-	};
+  rmOfferId(id){
+    Memory.bazaars[this.name].offers = Memory.bazaars[this.name].offers.filter(offer=>offer.id!=id);
+  };
 
-	addOffer(offer){
-		assert(typeof offer == 'object', 'Offer is not an object, but '+typeof offer);
-		assert(offer.id,      'Offer does not have id.');
-		assert(offer.owner,   'Offer does not have owner.');
-		assert(offer.time,    'Offer does not have time.');
-		assert(offer.credits, 'Offer does not have credits, it is '+offer.credits);
-		assert(offer.amount,  'Offer does not have amount.');
-		assert(offer.details, 'Offer does not have details.');
-		console.log(JSON.stringify(offer));
-		Memory.bazaars[this.name].offers.push(offer);
-	};
+  addOffer(offer){
+    assert(typeof offer == 'object', 'Offer is not an object, but '+typeof offer);
+    assert(offer.id,      'Offer does not have id.');
+    assert(offer.owner,   'Offer does not have owner.');
+    assert(offer.time,    'Offer does not have time.');
+    assert(offer.credits, 'Offer does not have credits, it is '+offer.credits);
+    assert(offer.amount,  'Offer does not have amount.');
+    assert(offer.details, 'Offer does not have details.');
+    console.log(JSON.stringify(offer));
+    Memory.bazaars[this.name].offers.push(offer);
+  };
 
-	getOffers(){
-		return Memory.bazaars[this.name].offers;
-	};
+  getOffers(){
+    return Memory.bazaars[this.name].offers;
+  };
 
 };
 

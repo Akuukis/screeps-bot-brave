@@ -8,10 +8,10 @@ const BUILD = 'build/';
 const LIB = 'lib/';
 
 gulp.task('lint', _=>
-    gulp.src(SRC)
-        .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failAfterError())
+  gulp.src(SRC)
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
 );
 
 gulp.task('build', function() {
@@ -24,8 +24,8 @@ gulp.task('test', function() {
 });
 
 gulp.task('commit', _=>
-    gulp.src(BUILD)
-        .pipe(gulpScreeps(credentials))
+  gulp.src(BUILD)
+    .pipe(gulpScreeps(credentials))
 );
 
 gulp.task('default', ['lint', 'build', 'test', 'commit']);
