@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var helper = require('./helpers');
 var assert = helper.assert;
@@ -115,24 +115,24 @@ var Agent = class Agent {
         orders: [],
         obligations: [],
       };
-    };
-  };
+    }
+  }
 
   // getters & setters
   credits(diff){
     if(diff) Memory.agents[this.name].credits += diff;
     return Memory.agents[this.name].credits;
-  };
+  }
 
   orders(newOffer){
     if(newOffer) Memory.agents[this.name].orders.push(newOffer);
     return Memory.agents[this.name].orders;
-  };
+  }
 
   obligations(newOffer){
     if(newOffer) Memory.agents[this.name].obligations.push(newOffer);
     return Memory.agents[this.name].obligations;
-  };
+  }
 
 };
 
@@ -144,12 +144,12 @@ var Bazaar = class Bazaar {
       Memory.bazaars[this.name] = {
         offers: [],
       };
-    };
-  };
+    }
+  }
 
   rmOfferId(id){
     Memory.bazaars[this.name].offers = Memory.bazaars[this.name].offers.filter(offer=>offer.id!=id);
-  };
+  }
 
   addOffer(offer){
     assert(typeof offer == 'object', 'Offer is not an object, but '+typeof offer);
@@ -161,11 +161,11 @@ var Bazaar = class Bazaar {
     assert(offer.details, 'Offer does not have details.');
     console.log(JSON.stringify(offer));
     Memory.bazaars[this.name].offers.push(offer);
-  };
+  }
 
   getOffers(){
     return Memory.bazaars[this.name].offers;
-  };
+  }
 
 };
 

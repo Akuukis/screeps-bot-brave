@@ -1,5 +1,5 @@
-"use strict";
-console.log('Reinitiate.')
+'use strict';
+console.log('Reinitiate.');
 
 //// Variables.
 var COLONY_NAME = 'Akuukis Swarm';
@@ -20,7 +20,7 @@ global.CACHE = undefined;
     for(let key in newMethods) screepsClass.prototype[key] = newMethods[key];
   };
   extend(global.Room, require('extendRoom'));
-};
+}
 
 
 { //// New classes.
@@ -28,7 +28,7 @@ global.CACHE = undefined;
   global.economy = require('./economy');
   global.squad = require('./squad');
   global.DTask = require('./dtask');
-};
+}
 
 
 //// Main loop.
@@ -49,7 +49,7 @@ module.exports.loop = function() {
         creep: economy.creepBazaar,
       },
     };
-  };
+  }
   for(let key in global.CACHE) Game[key] = global.CACHE[key];
 
 
@@ -64,7 +64,7 @@ module.exports.loop = function() {
   //// Entities act: Rooms.
   for(let name in Game.rooms){
     Game.rooms[name].init();
-  };
+  }
 
 
   //// Entities acts: Squads.
@@ -86,7 +86,7 @@ module.exports.loop = function() {
     orderedArray.forEach( squad=>squad.tick() );
     if(pulse) orderedArray.forEach( squad=>squad.pulse() );
 
-  };
+  }
 
 
   //// Deferred tasks: anything not urgent and CPU intensive goes here.

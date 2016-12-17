@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var helper = require('./helpers');
 var Agent = require('./economy').Agent;
@@ -12,7 +12,7 @@ var Squad = class Squad extends Agent {
   constructor(opts){
     if(opts.common.type == undefined) throw Error('Undefined type, like real undefined');
     if(opts.common.type == 'undefined') throw Error('Undefined type, like string "undefined"');
-    if(!opts.common.type in squadTypes) throw Error('Unknown type: '+opts.common.type);
+    if(!(opts.common.type in squadTypes)) throw Error('Unknown type: '+opts.common.type);
 
     super(opts.common.id);
     this.common = {
@@ -35,7 +35,7 @@ var Squad = class Squad extends Agent {
     for(let key in this.common) this[key] = this.common[key];
 
     cache.set(this.common.name, this);
-  };
+  }
 };
 
 squadTypes.recache = function recache(){
@@ -57,7 +57,7 @@ squadTypes.mine = class Mine extends Squad {
 
     opts.common.type = 'mine';
     var id = opts.common.id;
-    opts.common.name = "mine_"+gobi(id).pos.roomName+"-"+gobi(id).pos.x+"-"+gobi(id).pos.y;
+    opts.common.name = 'mine_'+gobi(id).pos.roomName+'-'+gobi(id).pos.x+'-'+gobi(id).pos.y;
     super(opts);
 
     this.uniq.source       = this._initSource(opts);
@@ -77,7 +77,7 @@ squadTypes.mine = class Mine extends Squad {
       return lair;
     }else{
       return null;
-    };
+    }
   }
 
   _initFort(){
@@ -90,13 +90,13 @@ squadTypes.mine = class Mine extends Squad {
     for(var j in pathRaw){
       var pos = energy.room.getPositionAt(pathRaw[j].x, pathRaw[j].y);
       path.push(pos);
-    };
+    }
     path.pop(); // Discard tile of Source itself.
     // console.log(Math.max(1,path.length-1-1))
     // console.log(path.length)
     // console.log(gobi(id).room.lookForAt('structure', path[Math.max(1,path.length-1-1)]));
     var structure = gobi(id).room.lookForAt('structure', path[Math.max(1,path.length-1-1)]);
-    if(structure && structure.structureType==STRUCTURE_RAMPART){ structure=structure.id };
+    if(structure && structure.structureType==STRUCTURE_RAMPART){ structure=structure.id; }
     return {
       id: structure||null,
       pos: path[path.length-1-1]
@@ -111,9 +111,9 @@ squadTypes.mine = class Mine extends Squad {
         let source = this.uniq.source;
         spots.push( new RoomPosition(source.pos.x+dx,source.pos.y+dy,source.pos.roomName) );
         let objs = Game.rooms[source.pos.roomName].lookAt(spots[spots.length-1]);
-        objs.forEach( obj=>{ if(obj.type == 'terrain' && obj.terrain == 'wall'){spots.pop()}; });
-      };
-    };
+        objs.forEach( obj=>{ if(obj.type == 'terrain' && obj.terrain == 'wall'){spots.pop();} });
+      }
+    }
     return spots;
   }
 
@@ -125,7 +125,7 @@ squadTypes.mine = class Mine extends Squad {
       for(let k in this.uniq.spots){
         let dist = tap.pos.findPathTo(this.uniq.spots[k]).length;
         if(dist == 1) tap.score++;
-      };
+      }
       taps.push(tap);
       if(tap.score > highscore) highscore = tap.score;
     });
@@ -163,18 +163,18 @@ squadTypes.mine = class Mine extends Squad {
         partice: {},
         tmp: {},
       };
-    };
+    }
 
     {  // Ask
       var orderId = this.common.id+'_creeps';
 
       // What would I buy instant or later?
-      var ticksToLive = this.creeps.reduce( (array,creep)=>array.push(creep.ticksToLive), [0] )
+      var ticksToLive = this.creeps.reduce( (array,creep)=>array.push(creep.ticksToLive), [0] );
       var countWorkParts = ticksToLive.map(t=>{
-          return self.creeps.reduce( (sum,creep)=>{
-              return sum + (creep.ticksToLive>t ? creep.body.reduce( (s,part)=>part==WORK?s+1:s, 0) : 0 )
-            }, 0);
-        })
+        return self.creeps.reduce( (sum,creep)=>{
+          return sum + (creep.ticksToLive>t ? creep.body.reduce( (s,part)=>part==WORK?s+1:s, 0) : 0 );
+        }, 0);
+      });
 
       // Update orders
       Game.bazaars.creep.rmOfferId(orderId);
@@ -182,21 +182,21 @@ squadTypes.mine = class Mine extends Squad {
         for(let j=1; j<=5-countWorkParts[i]; j++){
           let body = {M:1,W:j};
           Game.bazaars.creep.addOffer({
-              'id': orderId,
-              'owner': this.common.id,
-              'time': Game.time+ticksToLive[i],
-              'credits': helper.annuity(j*HARVEST_POWER, CREEP_LIFE_TIME),
-              'amount': helper.bodyCost(body),
-              'details': {
-                'costTick': j*HARVEST_POWER,
-                'body': body,
-                'duration': helper.bodyDuration(body),
-                'pos': self.uniq.tap,
-              },
-            });
-        };
-      };
-    };
+            'id': orderId,
+            'owner': this.common.id,
+            'time': Game.time+ticksToLive[i],
+            'credits': helper.annuity(j*HARVEST_POWER, CREEP_LIFE_TIME),
+            'amount': helper.bodyCost(body),
+            'details': {
+              'costTick': j*HARVEST_POWER,
+              'body': body,
+              'duration': helper.bodyDuration(body),
+              'pos': self.uniq.tap,
+            },
+          });
+        }
+      }
+    }
   }
 
   tick(){
@@ -206,28 +206,28 @@ squadTypes.mine = class Mine extends Squad {
       routine(creep);
       if(!creep){
         // He has died.
-      }else if(ram.role == "miner" || ram.role == "miner2"){
+      }else if(ram.role == 'miner' || ram.role == 'miner2'){
 
-        if(!ram.pos) ram.pos = ram.role=="miner" ? this.uniq.spots[0] : this.uniq.spots[1];
+        if(!ram.pos) ram.pos = ram.role=='miner' ? this.uniq.spots[0] : this.uniq.spots[1];
         if(isThreat(creep)){
           if(!Memory.lastSafety){
             // Panic!
             creep.moveTo(Memory.rallyPoint);
           }else{
             creep.moveTo(Memory.lastSafety);
-          };
-        };
+          }
+        }
         if(!ram.inPosition){
           creep.moveTo(ram.pos);
-          if(creep.pos.inRangeTo(ram.pos,0)){ ram.inPosition=true; };
+          if(creep.pos.inRangeTo(ram.pos,0)){ ram.inPosition=true; }
         }else{
           creep.harvest(gobi(id));
-        };
+        }
 
       }else{
         // Suicide?
-      };
-    };
+      }
+    }
   }
 };
 
@@ -244,8 +244,8 @@ squadTypes.upgr = class Upgr extends Squad {
 
     var id = this.id;
     if(!this.name){
-      this.name = "upgr_"+gobi(id).pos.roomName+"-"+gobi(id).pos.x+"-"+gobi(id).pos.y;
-    };
+      this.name = 'upgr_'+gobi(id).pos.roomName+'-'+gobi(id).pos.x+'-'+gobi(id).pos.y;
+    }
 
   }
 
