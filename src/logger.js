@@ -1,4 +1,4 @@
-"use strict"
+'use strict';
 
 if(!Memory.logs) Memory.logs = {};
 if(!Array.isArray(Memory.logs.fatal)) Memory.logs.fatal = [];
@@ -39,13 +39,13 @@ var Logger = {
     if(severity >= this.memoryLevel){
       let log = Memory.logs[this.levels[severity]];
 
-      if(log.length >= this.tailLength) Memory.logs[this.levels[severity]] = log.slice(Math.floor(this.tailLength/5))
+      if(log.length >= this.tailLength) Memory.logs[this.levels[severity]] = log.slice(Math.floor(this.tailLength/5));
       Memory.logs[this.levels[severity]].push(msg);
-    };
+    }
 
     if(severity >= this.consoleLevel){
-      console.log('<font color="' + this.colors[severity] + '" severity="' + severity + '">' + msg + "</font>")
-    };
+      global.console.log('<font color="' + this.colors[severity] + '" severity="' + severity + '">' + msg + '</font>');
+    }
   },
 
   fatal: function(msg){ this.log(msg, 5); },

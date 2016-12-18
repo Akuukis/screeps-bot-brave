@@ -1,4 +1,6 @@
-module.exports = function(creeps) {
+'use strict';
+
+module.exports = function() {
   // TODO
   // for(var i in Game.creeps){ if(!Memory.creeps[Game.creeps[i].name]){ console.log(Game.creeps[i].name); }; };
 

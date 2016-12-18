@@ -201,7 +201,7 @@ const Player = class Player extends Agent {
     helper.monitorCPU();
     if(Game.time%8 == 0) helper.printCPU();
 
-  };
+  }
 
 };
 

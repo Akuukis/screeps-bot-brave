@@ -32,7 +32,7 @@ global.posify = global.utils.posify;
   };
 }
 
-logger.info('Reinitiated.');
+global.logger.info('Reinitiated.');
 
 module.exports.loop = function() {
   // return;

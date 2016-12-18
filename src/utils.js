@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function() {
   var checkMemory = function() {
     Memory.routine = {creeps:{}};
