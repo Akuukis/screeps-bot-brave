@@ -1,14 +1,15 @@
 'use strict';
 
+var NEW_WORLD_NAME = 'Akuland';
+
 var DTask = require('./dtask');
 var helper = require('./helpers');
 var Agent = require('./economy').Agent;
 
-module.exports = class Player extends Agent {
+const Player = class Player extends Agent {
 
-  constructor(name){
-    super(name);
-    this.name = name;
+  constructor(){
+    super(NEW_WORLD_NAME);
   }
 
   pulse(){
@@ -131,4 +132,77 @@ module.exports = class Player extends Agent {
     //Game.bazaars.creep.executeOffer(bestOffer.id);
   }
 
+  loop(){
+
+    //// 0. //// Global entities: Build from Memory to RAM.
+    helper.checkMemory();
+    if(typeof global.CACHE == 'undefined'){
+      global.CACHE = {
+        player: new Player(COLONY_NAME),
+        dtasks: global.DTask.recache(),
+        squads: global.squad.recache(),
+        bazaars: {
+          energy: economy.energyBazaar,
+          creep: economy.creepBazaar,
+        },
+      };
+    }
+    for(let key in global.CACHE) Game[key] = global.CACHE[key];
+
+
+    //// Entity acts: Colony.
+    Memory.irr = Game.player.irr();
+    Memory.pulse = Game.player.pulse();
+    Object.keys(Game.rooms).forEach(function(id){ Game.player.overlay(id); }); // Make overlay for each unexplored room.
+    // Memory.demand.forEach(function(id){ Game.player.distribute(id); }); // Distribute spawning demands to spawns.
+    Game.player.escrows();
+
+
+    //// Entities act: Rooms.
+    for(let name in Game.rooms){
+      Game.rooms[name].init();
+    }
+
+
+    //// Entities acts: Squads.
+    if(Game.cpu.tickLimit < Game.cpu.bucket){
+      // Just execute all squads.
+
+      for(let squad of Game.squads.values()) squad.tick();
+      if(Memory.pulse) for(let squad of Game.squads.values()) squad.pulse();
+
+    }else{
+      // Execute all squads in prioritized order.
+
+      let order = new Set('mine','upgr','deff','patr','offn','esco','scot');
+      let subArrays = {};
+      let orderedArray = new Array();
+      for(let type of order.values()) subArrays[type] = new Array();
+      for(let squad of Game.squads.values()) if(typeof subArrays[squad.type] == 'array') subArrays[squad.type].push(squad);
+      for(let type of order.values()) orderedArray.push.apply(subArrays[type]);
+      orderedArray.forEach( squad=>squad.tick() );
+      if(pulse) orderedArray.forEach( squad=>squad.pulse() );
+
+    }
+
+
+    //// Deferred tasks: anything not urgent and CPU intensive goes here.
+    for(let dTask of Game.dtasks.values()){
+      if(Game.cpu.getUsed()/Game.cpu.tickLimit>0.5) break;
+      dTask.do();
+    }
+
+
+    //// Temporarly: code to be removed.
+    // obselete.loop();
+
+
+    //// Statistics.
+    helper.monitorCPU();
+    if(Game.time%8 == 0) helper.printCPU();
+
+  };
+
 };
+
+module.exports = Player;

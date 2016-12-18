@@ -3,6 +3,7 @@
 // Rely on ScreepsAutocomplete to provide global classes and constants.
 var globals = {};
 {
+  // Classes.
   let fs = require('fs');
   let vm = require('vm');
   []
@@ -11,9 +12,12 @@ var globals = {};
     .forEach(file=>{
       if(file.slice(-3) == '.js') globals[file.slice(0, -3)] = true;
     });
+  // Constants.
   let code = fs.readFileSync('./lib/ScreepsAutocomplete/Global/Constants.js', 'utf-8');
   let script = new vm.Script( code.toString().replace(/const /g, '') );
   script.runInNewContext(globals);
+  // Custom.
+  script.Agent = true;
 }
 
 module.exports = {
