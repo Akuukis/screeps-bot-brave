@@ -1,6 +1,6 @@
 'use strict';
 
-console.log('Reinitiate.');
+global.logger = require('./logger');
 
 //// Helpers.
 // var _ = require('lodash');
@@ -33,6 +33,8 @@ global.posify = helper.posify;
     low: new Defer('low'),
   };
 }
+
+logger.info('Reinitiated.');
 
 module.exports.loop = function() {
   // return;
