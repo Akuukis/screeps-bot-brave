@@ -1,14 +1,12 @@
 'use strict';
 
-global.logger = require('./logger');
-
-//// Helpers.
 // var _ = require('lodash');
-const helper = require('./helpers');
-helper.checkMemory();
-global.getID = helper.getID;
-global.gobi = helper.gobi;
-global.posify = helper.posify;
+global.logger = require('./logger');
+global.utils = require('./utils');
+
+global.getID = global.utils.getID;
+global.gobi = global.utils.gobi;
+global.posify = global.utils.posify;
 
 {  //// Extend existing classes.
   let extend = function extend(screepsClass, newMethods){
@@ -22,7 +20,7 @@ global.posify = helper.posify;
 }
 
 { //// Global entities: Build from Memory to RAM.
-  helper.checkMemory();
+  global.utils.checkMemory();
   let Player = require('./player');
   let Defer = require('./dtask');
   global.player = new Player();
