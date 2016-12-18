@@ -21,11 +21,10 @@ global.posify = global.utils.posify;
 
 { //// Global entities: Build from Memory to RAM.
   global.utils.checkMemory();
-  let Player = require('./player');
   let Defer = require('./defer');
-  global.player = new Player();
-  global.bazaar = require('./economy').bazaar;
-  global.defer = {
+  Game.player = require('./player');
+  Game.bazaar = require('./economy').bazaar;
+  Game.defer = {
     high: new Defer('high'),
     medium: new Defer('medium'),
     low: new Defer('low'),
@@ -36,10 +35,10 @@ global.logger.info('Reinitiated.');
 
 module.exports.loop = function() {
   // return;
-  global.player.loop();  //  priority
-  global.defer.high.loop();  // High priority
-  global.defer.medium.loop();  // Medium priority
-  global.defer.low.loop();  // Low priority
+  Game.player.loop();  //  priority
+  Game.defer.high.loop();  // High priority
+  Game.defer.medium.loop();  // Medium priority
+  Game.defer.low.loop();  // Low priority
 };
 
 // END. Leave empty line below.
