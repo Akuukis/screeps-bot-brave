@@ -22,7 +22,7 @@ global.posify = global.utils.posify;
 { //// Global entities: Build from Memory to RAM.
   global.utils.checkMemory();
   let Player = require('./player');
-  let Defer = require('./dtask');
+  let Defer = require('./defer');
   global.player = new Player();
   global.bazaar = require('./economy').bazaar;
   global.defer = {

@@ -134,22 +134,6 @@ const Player = class Player extends Agent {
 
   loop(){
 
-    //// 0. //// Global entities: Build from Memory to RAM.
-    helper.checkMemory();
-    if(typeof global.CACHE == 'undefined'){
-      global.CACHE = {
-        player: new Player(COLONY_NAME),
-        dtasks: global.DTask.recache(),
-        squads: global.squad.recache(),
-        bazaars: {
-          energy: economy.energyBazaar,
-          creep: economy.creepBazaar,
-        },
-      };
-    }
-    for(let key in global.CACHE) Game[key] = global.CACHE[key];
-
-
     //// Entity acts: Colony.
     Memory.irr = Game.player.irr();
     Memory.pulse = Game.player.pulse();
