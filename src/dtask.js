@@ -1,12 +1,49 @@
 'use strict';
 
+if(!Memory.defer) Memory.defer = {};
+if(!Game.deferredFn) Game.deferredFn = {};
 
-var MEM = 'deferred';
+let Defer = class Defer {
 
+  constructor(name, cpuLimit){
+    this.name = name;
+    this.cpuLimit = cpuLimit;
+    let self = this;
+    this.memory = ()=>Memory.defer[self.name];
+    if(!this.memory()) Memory.defer[this.name] = [];
+  }
 
-var squads = require('./squad');
+  static registerArrowFn(fn){
+    Game.deferredFn[fn.name] = fn;
+  }
 
-var map = new Map();
+  add(fn, owner){
+    this.memory().push({
+      fn: fn,
+      owner: owner,
+    });
+  }
+
+  do(){
+    let fn = this.memory()[0];
+    try{
+      fn();
+    }catch(e){
+      global.logger.warn('defer.'+this.name+' got error in function '+fn.name+' from '+fn.owner+': '+e.toString());
+    }finally{
+      this.memory().shift();
+    }
+  }
+
+  loop(){
+    while(Game.cpu.getUsed() < this.cpuLimit) this.do();
+  }
+
+};
+
+module.exports = Defer;
+
+/*
 
 module.exports = class DTask {
 
