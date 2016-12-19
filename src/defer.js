@@ -36,7 +36,7 @@ let Defer = class Defer {
   }
 
   loop(){
-    while(Game.cpu.getUsed() < this.cpuLimit) this.do();
+    while(this.memory().length > 0 && Game.cpu.getUsed() < this.cpuLimit) this.do();
   }
 
 };
