@@ -24,14 +24,24 @@ global.Agent = require('./economy').Agent;
 
 //// Add new entities.
 global.utils.checkMemory();
-const player = new (require('./player'))();
+
 const bazaar = require('./economy').bazaar;
-let Defer = require('./defer');
+Game.bazaar = bazaar;
+const agents = {};
+Game.agents = agents;
+
+const Defer = require('./defer');
 const defer = {
+  registerFn: Defer.registerFn,
+  functions: {},
   high: new Defer('high', 50),
   medium: new Defer('medium', 20),
   low: new Defer('low', 10),
 };
+Game.defer = defer;
+
+const player = new (require('./player'))();
+Game.player = player;
 
 
 global.logger.info('Reinitiated.');
@@ -42,6 +52,7 @@ module.exports.loop = function(){
   Game.player = player;
   Game.bazaar = bazaar;
   Game.defer = defer;
+  Game.agents = agents;
 
   // return;
 

@@ -105,6 +105,7 @@ var Agent = class Agent {
   constructor(name){
     if(!name) throw Error('No name.');
     this.name = name;
+    Game.agents[this.name] = this;
     if(!Memory.agents[this.name]){
       Memory.agents[this.name] = {
         credits: 0,

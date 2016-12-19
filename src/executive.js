@@ -19,7 +19,6 @@ const Executive = class Executive extends global.Agent {
     global.utils.pcall( ()=>self.governor.loop(),   'executive called governor.loop but got error');
 
     global.utils.pcall( ()=>{
-        Object.keys(Game.rooms).forEach(function(id){ Game.player.overlay(id); });
 
         //// Entities act: Rooms.
         for(let name in Game.rooms){
