@@ -20,10 +20,11 @@ const Player = class Player extends global.Agent {
   }
 
   loop(){
+    const self = this;
 
-    try{ this.marshal.loop()   }catch(e){ global.logger.error('Player called Marshal.loop but got error.\n'+e.stack) };
-    try{ this.diplomat.loop()  }catch(e){ global.logger.error('Player called Diplomat.loop but got error.\n'+e.stack) };
-    try{ this.executive.loop() }catch(e){ global.logger.error('Player called Executive.loop but got error.\n'+e.stack) };
+    global.utils.pcall( ()=>self.marshal.loop(),   'player called marshal.loop but got error');
+    global.utils.pcall( ()=>self.diplomat.loop(),  'player called diplomat.loop but got error');
+    global.utils.pcall( ()=>self.executive.loop(), 'player called executive.loop but got error');
 
   }
 

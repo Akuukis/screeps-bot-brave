@@ -45,13 +45,12 @@ module.exports.loop = function(){
 
   // return;
 
-  Game.player.loop();  //  priority
+  global.utils.pcall( ()=>Game.player.loop(),       'main.js called player.loop but got error');
+  global.utils.pcall( ()=>Game.defer.high.loop(),   'main.js called defer.high.loop but got error');
+  global.utils.pcall( ()=>Game.defer.medium.loop(), 'main.js called defer.medium.loop but got error');
+  global.utils.pcall( ()=>Game.defer.low.loop(),    'main.js called defer.low.loop but got error');
 
-  Game.defer.high.loop();  // High priority
-  Game.defer.medium.loop();  // Medium priority
-  Game.defer.low.loop();  // Low priority
-
-  helper.monitorCPU();
-  if(Game.time%8 == 0) helper.printCPU();
+  global.utils.monitorCPU();
+  if(Game.time%8 == 0) global.utils.printCPU();
 
 };

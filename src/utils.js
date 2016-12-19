@@ -94,7 +94,7 @@ module.exports = function() {
     sum = 0;
     for(var k in Memory.CPU) sum = sum + (Memory.CPU[k]-avg)*(Memory.CPU[k]-avg);
     var stdev = Math.sqrt(sum) / Memory.CPU.length;
-    console.log('CPU:',avg.toFixed(2),'+/-',stdev.toFixed(2));
+    global.logger.info('CPU: '+avg.toFixed(2)+' +/- '+stdev.toFixed(2));
   }
 
   function annuity(rent,n,i){
@@ -143,6 +143,15 @@ module.exports = function() {
     return sum;
   }
 
+  function pcall(fn, msg){
+    try{
+      fn();
+    }catch(e){
+      var stackTruncated = e.stack.match(/[\s\S]*\(main.*/m) || [''];
+      global.logger.error(msg+'\n'+stackTruncated);
+    }
+  }
+
   return {
     'checkMemory': checkMemory,
     'gobi': Game.getObjectById,
@@ -153,6 +162,7 @@ module.exports = function() {
     'isThreat': isThreat,
     'bodify': bodify,
     'monitorCPU': monitorCPU,
+    'pcall': pcall,
     'printCPU': printCPU,
     'annuity': annuity,
     'perpetuity': perpetuity,
