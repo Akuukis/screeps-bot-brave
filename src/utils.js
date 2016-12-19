@@ -147,8 +147,9 @@ module.exports = function() {
     try{
       fn();
     }catch(e){
-      var stackTruncated = e.stack.match(/[\s\S]*\(main.*/m) || [''];
-      global.logger.error(msg+'\n'+stackTruncated);
+      var stack = (e.stack.match(/[\s\S]*\(main.*/m) || [''])[0];  // hide stack outside of VM.
+      stack = stack.replace(/^.*pcall.*$\n/gm, '');  // hide spam of pcalls in stack.
+      global.logger.error(msg+'\n'+stack);
     }
   }
 
