@@ -24,7 +24,7 @@ global.Agent = require('./economy').Agent;
 
 //// Add new entities.
 global.utils.checkMemory();
-Game.player = require('./player');
+Game.player = new (require('./player'))();
 Game.bazaar = require('./economy').bazaar;
 let Defer = require('./defer');
 Game.defer = {
