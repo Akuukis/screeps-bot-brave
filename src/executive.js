@@ -5,29 +5,18 @@ const Executive = class Executive extends global.Agent {
   constructor(player){
     super('Executive', player);
     this.escrow = new (require('escrow'))(this);
+    this.governor = new (require('governor'))(this);
   }
 
   irr(){
     return this.parent.irr() * 1.05;
   }
 
-  // Make overlay for each unexplored room.
-  overlay(id){
-    var room = Game.rooms[id];
-    if(room.controller && room.controller.my && !Memory.cities[room.name]){ Memory.cities[room.name]={}; }
-    if(!Memory.rooms[room.name]){ Memory.rooms[room.name]={}; }
-    if(!Memory.rooms[room.name].threats){ new DTask({fn:'overlayThreats("' +room.name+'")'}); }
-    if(!Memory.rooms[room.name].deff   ){ new DTask({fn:'overlayDeff("'    +room.name+'")'}); }
-    if(!Memory.rooms[room.name].network){ new DTask({fn:'overlayNetwork("' +room.name+'")'}); } // Including POIs
-    if(!Memory.rooms[room.name].city   ){ new DTask({fn:'overlayCity("'    +room.name+'")'}); }
-    if(!Memory.rooms[room.name].rating ){ new DTask({fn:'calcRating("'     +room.name+'")'}); }
-    if(!Memory.rooms[room.name].finish ){ new DTask({fn:'calcFinish("'     +room.name+'")'}); }
-  }
-
   loop(){
     const self = this;
 
     global.utils.pcall( ()=>self.escrow.loop(),   'executive called escrow.loop but got error');
+    global.utils.pcall( ()=>self.governor.loop(),   'executive called governor.loop but got error');
 
     global.utils.pcall( ()=>{
         Object.keys(Game.rooms).forEach(function(id){ Game.player.overlay(id); });
