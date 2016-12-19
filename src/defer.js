@@ -28,7 +28,7 @@ let Defer = class Defer {
   do(){
     let d = this.memory().shift();
     let fn = Game.defer.functions[d.registeredFn].bind(Game.agents[d.owner]);
-    global.utils.pcall( $=>fn(), 'defer.'+this.name+' got error in '+d.owner+'.'+d.registeredFn.name);
+    global.utils.pcall( ()=>fn(), 'defer.'+this.name+' got error in '+d.owner+'.'+d.registeredFn.name);
   }
 
   loop(){

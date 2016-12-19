@@ -156,7 +156,7 @@ var Bazaar = class Bazaar {
     global.utils.assert(offer.credits, 'Offer does not have credits, it is '+offer.credits);
     global.utils.assert(offer.amount,  'Offer does not have amount.');
     global.utils.assert(offer.details, 'Offer does not have details.');
-    console.log(JSON.stringify(offer));
+    global.logger.debug(JSON.stringify(offer));
     Memory.bazaars[this.name].offers.push(offer);
   }
 

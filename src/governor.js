@@ -326,9 +326,9 @@ const Governor = class Governor extends global.Agent {
   }
 
   loop(){
-    const self = this;
 
-    Object.keys(Game.rooms).forEach( id=>self.overlay(id) );
+    Object.keys(Game.rooms).forEach( id=>this.overlay(id) );
+
   }
 
 };
