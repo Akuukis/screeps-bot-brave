@@ -1,15 +1,13 @@
 'use strict';
 
 if(!Memory.defer) Memory.defer = {};
-if(!Game.deferredFn) Game.deferredFn = {};
 
 let Defer = class Defer {
 
   constructor(name, cpuLimit){
     this.name = name;
     this.cpuLimit = cpuLimit;
-    let self = this;
-    this.memory = ()=>Memory.defer[self.name];
+    this.memory = ()=>Memory.defer[this.name];
     if(!this.memory()) Memory.defer[this.name] = [];
   }
 
@@ -28,7 +26,7 @@ let Defer = class Defer {
   do(){
     let d = this.memory().shift();
     let fn = Game.defer.functions[d.registeredFn].bind(Game.agents[d.owner]);
-    global.utils.pcall( ()=>fn(), 'defer.'+this.name+' got error in '+d.owner+'.'+d.registeredFn.name);
+    global.utils.pcall( ()=>fn(), 'defer.'+this.name+' got error in '+d.owner+'.'+d.registeredFn);
   }
 
   loop(){
