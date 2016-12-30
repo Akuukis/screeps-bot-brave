@@ -1,5 +1,4 @@
-screeps.sublime-project
-screeps.sublime-workspace
+*.sublime-workspace
 node_modules
-gruntfile.js
-ScreepsAutocomplete
+credentials.js
+build/

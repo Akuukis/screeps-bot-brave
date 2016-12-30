@@ -1,65 +1,67 @@
-"use strict";
+'use strict';
 
-var helper = require('./helpers');
-global.getID = helper.getID;
-global.gobi = helper.gobi;
-global.posify = helper.posify;
 
-var colony = require('./colony');
-var city = require('./city');
-var squad = require('./squad');
-var dtask = require('./dtask');
-var obselete = require('./obselete');
+//// Add new functions.
+// var _ = require('lodash');
+global.logger = require('./logger');
+global.utils = require('./utils');
 
-module.exports.loop = function() {
+global.getID = global.utils.getID;
+global.gobi = global.utils.gobi;
+global.posify = global.utils.posify;
 
-	// return;
 
-	//// 0. //// Memory structure check, assume good later.
-
-	//// 1. //// Helper functions.
-	// var _ = require('lodash');
-	helper.checkMemory();
-	//// 2. //// Adis - Automatic Debugging & Isolation System. a.k.a. self-debugger.
-	// var adis =require('./adis');
-
-	//// 3. //// Colony (priority tasks).
-	global.pulse = colony.pulse();
-
-	//// 4. //// (each) City (priority tasks).
-	Object.keys(Memory.cities).forEach(function(name){
-		city.memoryCheck(name);
-		city.spawnQueue(name);
-	});
-
-	//// 5. //// (each) Squad tasks in order.
-	Object.keys(Memory.squads.mine).forEach(function(id){ squad.doMine(id); });
-	Object.keys(Memory.squads.upgr).forEach(function(id){ squad.doUpgr(id); });
-	Object.keys(Memory.squads.deff).forEach(function(id){ squad.doDeff(id); });
-	Object.keys(Memory.squads.patr).forEach(function(id){ squad.doPatr(id); });
-	Object.keys(Memory.squads.offn).forEach(function(id){ squad.doOffn(id); });
-	Object.keys(Memory.squads.esco).forEach(function(id){ squad.doEsco(id); });
-	Object.keys(Memory.squads.scot).forEach(function(id){ squad.doScot(id); });
-
-	//// 6. //// (each) City. Everythin of scope room.
-	// Memory.cities.forEach(function(name){ city.spawnQueue(name); });
-
-	//// 7. //// The Colony. Everything of scope global.
-	Object.keys(Game.rooms).forEach(function(id){ colony.overlay(id); }); // Make overlay for each unexplored room.
-	// Memory.demand.forEach(function(id){ colony.distribute(id); }); // Distribute spawning demands to spawns.
-	colony.transits();
-
-	//// 8. //// Deferred tasks. Anything not urgent and CPU intensive goes here.
-	dtask.checkMemory();
-
-	while(Game.cpuLimit>400 && Game.cpu.getUsed()/Game.cpuLimit<0.8 && Memory.deffered.fn.length>0){ // TODO const.
-		dtask.doNext();
-	}
-
-	//// Old code to be removed.
-	obselete.loop();
-
-	//// 9. //// statistics.
-	helper.monitorCPU();
+//// Extend existing classes.
+let extend = function extend(screepsClass, newMethods){
+  for(let key in newMethods) screepsClass.prototype[key] = newMethods[key];
 };
-// END. Leave empty line below.
+extend(global.Room, require('extendRoom'));
+
+
+//// Add new classes.
+global.Agent = require('./economy').Agent;
+
+
+//// Add new entities.
+global.utils.checkMemory();
+
+const bazaar = require('./economy').bazaar;
+Game.bazaar = bazaar;
+const agents = {};
+Game.agents = agents;
+
+const Defer = require('./defer');
+const defer = {
+  registerFn: Defer.registerFn,
+  functions: {},
+  high: new Defer('high', 50),
+  medium: new Defer('medium', 20),
+  low: new Defer('low', 10),
+};
+Game.defer = defer;
+
+const player = new (require('./player'))();
+Game.player = player;
+
+
+global.logger.info('Reinitiated.');
+
+
+module.exports.loop = function(){
+
+  Game.player = player;
+  Game.bazaar = bazaar;
+  Game.defer = defer;
+  Game.agents = agents;
+
+  // return;
+
+  global.utils.pcall( ()=>Game.player.loop(),       'main.js called player.loop but got error');
+  global.utils.pcall( ()=>Game.defer.high.loop(),   'main.js called defer.high.loop but got error');
+  global.utils.pcall( ()=>Game.defer.medium.loop(), 'main.js called defer.medium.loop but got error');
+  global.utils.pcall( ()=>Game.defer.low.loop(),    'main.js called defer.low.loop but got error');
+
+  global.utils.monitorCPU();
+  if(Game.time%8 == 0) global.utils.printCPU();
+
+};

@@ -1,0 +1,34 @@
+{
+  "name": "screeps-bot-brave",
+  "version": "0.2.0",
+  "description": "Standalone Screeps bot 'BraveBot' that in cooperation with its kind will unite the server into a brave new world. Community! Identity! Stability!",
+  "author": "Akuukis <akuukis@kalvis.lv>",
+  "screeps_bot": true,
+  "contributors": [],
+  "scripts": {
+    "test": "gulp test",
+    "commit": "gulp commit"
+  },
+  "main": "build/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Akuukis/screeps"
+  },
+  "bugs": {
+    "url": "https://github.com/Akuukis/screeps/issues"
+  },
+  "keywords": [
+    "screeps",
+    "bot",
+    "ai"
+  ],
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-screeps": "^1.0.3"
+  },
+  "devDependencies": {
+    "gulp-eslint": "^3.0.1"
+  },
+  "private": false,
+  "license": "GPLv3"
+}
