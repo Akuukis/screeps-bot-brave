@@ -1,6 +1,6 @@
 ## Intro
 
-At this moment all ideas ar work in progress and master contains quickfix-style scripts for creeps to be able to work for GCL.
+At this moment all ideas ar work in progress. `dev` and `master` are both broken. I hope to get structure and concepts in place, as well creeps doing basic jobs as soon as possible (spring 2017?). That will be called version Alpha 1.0 and from that on I invite everyone to join in to develop this further together.
 
 > Check out `legacy` branch for simple code that runs a room on 3.50 CPU/tick.
 
